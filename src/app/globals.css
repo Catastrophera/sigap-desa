@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   SIGAP DESA — Unified Civic Design System
+   Pattern: Minimal Single Column · Accessible & Ethical
+   Primary: #0F172A (Slate Navy)
+   Accent:  #0369A1 (Sky Blue / Government)
+   BG:      #F8FAFC (Clean Light Porcelain)
+   ============================================ */
+
+:root {
+  --color-primary:         #0F172A;
+  --color-on-primary:      #FFFFFF;
+  --color-secondary:       #334155;
+  --color-on-secondary:    #FFFFFF;
+  --color-accent:          #0369A1;
+  --color-accent-hover:    #0284C7;
+  --color-on-accent:       #FFFFFF;
+  --color-background:      #F8FAFC;
+  --color-foreground:      #020617;
+  --color-card:            #FFFFFF;
+  --color-card-foreground: #020617;
+  --color-muted:           #E8ECF1;
+  --color-muted-fg:        #64748B;
+  --color-border:          #E2E8F0;
+  --color-border-hover:    #CBD5E1;
+  --color-destructive:     #DC2626;
+  --color-ring:            #0369A1;
+
+  /* Semantic Status Colors */
+  --color-success:         #16A34A;
+  --color-success-bg:      #F0FDF4;
+  --color-success-border:  #BBF7D0;
+  --color-warning:         #D97706;
+  --color-warning-bg:      #FFFBEB;
+  --color-warning-border:  #FDE68A;
+  --color-info:            #0369A1;
+  --color-info-bg:         #EFF6FF;
+  --color-info-border:     #BFDBFE;
+  --color-error:           #DC2626;
+  --color-error-bg:        #FEF2F2;
+  --color-error-border:    #FECACA;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm:   0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md:   0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* ── Base Styles ─────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  font-family: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Accessible Focus Ring (WCAG AAA) ────────────────── */
+*:focus-visible {
+  outline: 3px solid var(--color-ring) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+/* ── Skip Link (Keyboard Nav) ────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  z-index: 9999;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Scrollbar (Minimal) ─────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-background); }
+::-webkit-scrollbar-thumb { background: var(--color-border-hover); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted-fg); }
+
+/* ── Map Marker: Pulsing Radar (High Priority) ───────── */
+.radar-pulse-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.radar-pulse-core {
+  width: 14px;
+  height: 14px;
+  background-color: #DC2626;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  position: relative;
+}
+.radar-pulse-wave {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(220, 38, 38, 0.3);
+  animation: radarPulse 2s infinite ease-out;
+  z-index: 1;
+}
+@keyframes radarPulse {
+  0%   { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ── Leaflet Map Overrides ───────────────────────────── */
+.leaflet-container {
+  font-family: inherit !important;
+  z-index: 10;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-md) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.5 !important;
+}
+
+/* ── Card Hover Lift ─────────────────────────────────── */
+.card-hover {
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+.card-hover:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── No Scrollbar Utility ────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Reduced Motion ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

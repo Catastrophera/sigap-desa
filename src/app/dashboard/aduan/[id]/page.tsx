@@ -21,6 +21,7 @@ import {
   Sparkles,
   ExternalLink,
   MessageCircle,
+  ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
 import { convertToWebP } from '@/lib/image-compress';
@@ -149,20 +150,20 @@ export default function AdminAduanDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-        <h2 className="text-xs font-bold text-muted-foreground">Memuat Rincian Pengaduan...</h2>
+      <div className="max-w-4xl mx-auto px-4 py-32 text-center">
+        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+        <h2 className="text-xs font-bold text-[#646973]">Memuat Rincian Pengaduan…</h2>
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div className="max-w-xl mx-auto px-4 py-24 text-center">
-        <h2 className="text-base font-bold text-foreground">Pengaduan Tidak Ditemukan</h2>
+      <div className="max-w-xl mx-auto px-4 py-32 text-center space-y-4">
+        <h2 className="font-display text-base font-bold text-[#191A1E]">Pengaduan Tidak Ditemukan</h2>
         <Link
           href="/dashboard"
-          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-[#1B4332] text-white rounded-full text-xs font-bold"
         >
           <ArrowLeft className="w-4 h-4" />
           Kembali ke Dashboard
@@ -172,21 +173,21 @@ export default function AdminAduanDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-16">
-      {/* TOP HEADER */}
-      <div className="bg-white border-b border-border">
+    <div id="main-content" className="min-h-screen bg-[#FAF8F3] pb-24">
+      {/* ── TOP HEADER ─────────────────────────────── */}
+      <div className="bg-white border-b border-[#E6E2D8] sticky top-0 z-30 shadow-2xs">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-xs font-bold text-secondary hover:text-primary transition-colors min-h-[36px]"
+            className="inline-flex items-center gap-2 text-[12px] font-bold text-[#646973] hover:text-[#191A1E] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali ke Command Center
+            <span>Kembali ke Command Center</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground font-medium">Kode Tiket:</span>
-            <span className="font-mono font-bold text-xs text-primary bg-muted px-2.5 py-1 rounded border border-border">
+            <span className="text-[12px] text-[#646973] font-medium">Tiket:</span>
+            <span className="font-mono font-bold text-xs text-[#191A1E] bg-[#FAF8F3] px-3 py-1 rounded-full border border-[#E6E2D8]">
               #{report.ticket_code}
             </span>
           </div>
@@ -195,14 +196,15 @@ export default function AdminAduanDetailPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* INFORMASI LAPORAN (2 Cols) */}
+
+          {/* ── INFORMASI LAPORAN (2 Cols) ───────────── */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-card rounded-xl border border-border shadow-accessible-sm p-6 space-y-5">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                  Data Pengaduan Lapangan
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7 space-y-5">
+              <div className="flex items-center justify-between border-b border-[#E6E2D8] pb-3.5">
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#191A1E]">
+                  Data Fisik Pengaduan
                 </h3>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[11px] text-[#646973]">
                   {new Date(report.created_at).toLocaleDateString('id-ID', {
                     dateStyle: 'medium',
                   })}
@@ -210,31 +212,31 @@ export default function AdminAduanDetailPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span className="text-muted-foreground block mb-0.5">Kategori:</span>
-                  <span className="font-bold text-foreground text-sm">{report.kategori}</span>
+                <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
+                  <span className="text-[#646973] block mb-0.5 text-[11px]">Kategori:</span>
+                  <span className="font-bold text-[#191A1E] text-sm">{report.kategori}</span>
                 </div>
-                <div>
-                  <span className="text-muted-foreground block mb-0.5">Wilayah Dusun:</span>
-                  <span className="font-bold text-foreground text-sm">{report.dusun}</span>
+                <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
+                  <span className="text-[#646973] block mb-0.5 text-[11px]">Wilayah Dusun:</span>
+                  <span className="font-bold text-[#191A1E] text-sm">{report.dusun}</span>
                 </div>
               </div>
 
               <div>
-                <span className="text-xs text-muted-foreground block mb-1">Deskripsi Kerusakan:</span>
-                <div className="p-3.5 bg-muted/40 rounded-lg border border-border text-xs text-foreground leading-relaxed">
+                <span className="text-[12px] font-bold text-[#646973] block mb-1">Deskripsi Kerusakan:</span>
+                <div className="p-4 bg-[#FAF8F3] rounded-2xl border border-[#E6E2D8] text-[13px] text-[#191A1E] leading-relaxed">
                   {report.deskripsi}
                 </div>
               </div>
 
               {/* FOTO AWAL */}
               <div>
-                <span className="text-xs text-muted-foreground block mb-1.5">Foto Bukti Kerusakan:</span>
-                <div className="h-60 bg-muted rounded-lg overflow-hidden border border-border">
+                <span className="text-[12px] font-bold text-[#646973] block mb-1.5">Foto Bukti Kerusakan:</span>
+                <div className="h-64 bg-[#FAF8F3] rounded-2xl overflow-hidden border border-[#E6E2D8]">
                   {report.foto_url ? (
                     <img src={report.foto_url} alt="Foto Kerusakan" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-medium">
+                    <div className="w-full h-full flex items-center justify-center text-[#9E998E] text-xs font-medium">
                       Pelapor tidak melampirkan foto
                     </div>
                   )}
@@ -242,19 +244,19 @@ export default function AdminAduanDetailPage() {
               </div>
 
               {/* PELAPOR & GPS */}
-              <div className="pt-3 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div className="pt-4 border-t border-[#E6E2D8] grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
-                  <span className="text-muted-foreground block font-medium">Informasi Pelapor:</span>
-                  <div className="flex items-center gap-1.5 font-bold text-foreground">
-                    <User className="w-3.5 h-3.5 text-muted-foreground" />
+                  <span className="text-[#646973] block font-bold text-[11px]">Informasi Pelapor:</span>
+                  <div className="flex items-center gap-1.5 font-bold text-[#191A1E]">
+                    <User className="w-3.5 h-3.5 text-[#646973]" />
                     {report.nama_pelapor || 'Anonim'}
                   </div>
                   {report.kontak_pelapor && (
                     <div className="flex items-center gap-2 pt-1">
-                      <span className="text-foreground font-mono">{report.kontak_pelapor}</span>
+                      <span className="text-[#191A1E] font-mono">{report.kontak_pelapor}</span>
                       <button
                         onClick={handleContactReporterWA}
-                        className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-1 rounded border border-emerald-300 cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-300 cursor-pointer"
                       >
                         <MessageCircle className="w-3 h-3" /> Hubungi WA
                       </button>
@@ -263,52 +265,52 @@ export default function AdminAduanDetailPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-muted-foreground block font-medium">Koordinat GPS:</span>
-                  <div className="font-mono font-bold text-foreground flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-accent" />
+                  <span className="text-[#646973] block font-bold text-[11px]">Koordinat Geospasial:</span>
+                  <div className="font-mono font-bold text-[#191A1E] flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-700" />
                     {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
                   </div>
                   <a
                     href={`https://www.google.com/maps?q=${report.latitude},${report.longitude}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-bold text-accent hover:underline min-h-[36px]"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline"
                   >
-                    Buka di Google Maps <ExternalLink className="w-3.5 h-3.5" />
+                    Buka Google Maps <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* FORM TINDAKAN (1 Col) */}
+          {/* ── FORM TINDAKAN (1 Col) ────────────────── */}
           <div className="space-y-6">
-            <form onSubmit={handleSaveChanges} className="bg-card rounded-xl border border-border shadow-accessible-sm p-6 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground border-b border-border pb-3">
-                Form Tindakan Petugas
+            <form onSubmit={handleSaveChanges} className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7 space-y-4">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#191A1E] border-b border-[#E6E2D8] pb-3">
+                Form Tindakan Perangkat Desa
               </h3>
 
               {/* Status */}
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Status Penanganan:</label>
+                <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">Status Penanganan:</label>
                 <select
                   value={status}
                   onChange={(e: any) => setStatus(e.target.value)}
-                  className="w-full text-xs font-bold rounded-lg border border-border p-2.5 bg-white text-foreground focus:outline-none min-h-[40px]"
+                  className="w-full text-[13px] font-bold rounded-xl border border-[#E6E2D8] p-3 bg-[#FAF8F3] text-[#191A1E] focus:bg-white focus:outline-none"
                 >
                   <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
                   <option value="Sedang Ditindak">Sedang Ditindak</option>
-                  <option value="Selesai">Selesai (Fasilitas Diperbaiki)</option>
+                  <option value="Selesai">Selesai (Tuntas Diperbaiki)</option>
                 </select>
               </div>
 
               {/* Prioritas */}
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Tingkat Prioritas:</label>
+                <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">Tingkat Prioritas:</label>
                 <select
                   value={prioritas}
                   onChange={(e: any) => setPrioritas(e.target.value)}
-                  className="w-full text-xs font-bold rounded-lg border border-border p-2.5 bg-white text-foreground focus:outline-none min-h-[40px]"
+                  className="w-full text-[13px] font-bold rounded-xl border border-[#E6E2D8] p-3 bg-[#FAF8F3] text-[#191A1E] focus:bg-white focus:outline-none"
                 >
                   <option value="Tinggi">Prioritas Tinggi (Darurat / Mendesak)</option>
                   <option value="Sedang">Prioritas Sedang (Reguler)</option>
@@ -318,35 +320,37 @@ export default function AdminAduanDetailPage() {
 
               {/* Catatan Admin */}
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Catatan Penanganan Lapangan:</label>
+                <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">Catatan Penanganan Lapangan:</label>
                 <textarea
                   rows={3}
                   value={catatanAdmin}
                   onChange={(e) => setCatatanAdmin(e.target.value)}
                   placeholder="Contoh: Material aspal tiba besok, dikoordinasikan dengan tim RT 02..."
-                  className="w-full text-xs rounded-lg border border-border p-2.5 text-foreground bg-white focus:outline-none"
+                  className="w-full text-[13px] rounded-xl border border-[#E6E2D8] p-3 text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none"
                 ></textarea>
               </div>
 
               {/* Upload Foto Selesai */}
-              <div className="pt-2 border-t border-border space-y-2">
-                <label className="block text-xs font-bold text-foreground">
+              <div className="pt-2 border-t border-[#E6E2D8] space-y-2">
+                <label className="block text-[12px] font-bold text-[#191A1E]">
                   Foto Bukti Pengerjaan (After-Photo):
                 </label>
 
-                <div className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-border rounded-xl bg-muted/30">
+                <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-[#E6E2D8] rounded-2xl bg-[#FAF8F3]">
                   {afterPreview ? (
                     <div className="w-full space-y-2 text-center">
-                      <img src={afterPreview} alt="Bukti Selesai" className="h-32 w-full object-cover rounded-lg border border-border" />
-                      <label htmlFor="after-file" className="text-xs font-bold text-accent hover:underline cursor-pointer block">
+                      <img src={afterPreview} alt="Bukti Selesai" className="h-36 w-full object-cover rounded-xl border border-[#E6E2D8]" />
+                      <label htmlFor="after-file" className="text-[12px] font-bold text-emerald-700 hover:underline cursor-pointer block">
                         Ganti Foto Bukti Selesai
                       </label>
                     </div>
                   ) : (
-                    <label htmlFor="after-file" className="cursor-pointer text-center py-2 flex flex-col items-center gap-1 text-secondary hover:text-primary">
-                      <Camera className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-xs font-bold">Unggah Foto Selesai</span>
-                      <span className="text-[10px] text-muted-foreground">Otomatis WebP Web-Ready</span>
+                    <label htmlFor="after-file" className="cursor-pointer text-center py-2 flex flex-col items-center gap-1.5 text-[#646973] hover:text-[#191A1E]">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-800">
+                        <Camera className="w-5 h-5" />
+                      </div>
+                      <span className="text-[12px] font-bold text-[#191A1E]">Unggah Foto Selesai</span>
+                      <span className="text-[10px] text-[#9E998E]">Otomatis WebP (Max 1MB)</span>
                     </label>
                   )}
                   <input id="after-file" type="file" accept="image/*" className="sr-only" onChange={handleAfterImageChange} />
@@ -356,13 +360,14 @@ export default function AdminAduanDetailPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full py-3 bg-primary hover:bg-secondary text-on-primary font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[44px] disabled:opacity-50"
+                className="w-full py-3.5 bg-[#1B4332] hover:bg-[#143628] text-white font-bold text-[13px] rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
               >
-                <Save className="w-4 h-4" />
-                <span>{saving ? 'Menyimpan...' : 'Simpan & Perbarui'}</span>
+                <Save className="w-4 h-4 text-emerald-300" />
+                <span>{saving ? 'Menyimpan...' : 'Simpan & Perbarui Status'}</span>
               </button>
             </form>
           </div>
+
         </div>
       </div>
     </div>

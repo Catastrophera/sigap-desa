@@ -46,70 +46,66 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-background">
-      <div className="max-w-md w-full space-y-6">
+    <div id="main-content" className="min-h-screen flex items-center justify-center px-4 py-24 bg-[#FAF8F3]">
+      <div className="max-w-md w-full space-y-5">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-secondary hover:text-primary transition-colors min-h-[36px]"
+          className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#646973] hover:text-[#191A1E] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Kembali ke Portal Warga
+          <span>Kembali ke Portal Warga</span>
         </Link>
 
-        <div className="bg-card rounded-xl shadow-accessible-md border border-border p-8 space-y-6">
+        <div className="bg-white rounded-3xl sm:rounded-4xl shadow-card-soft border border-[#E6E2D8] p-8 sm:p-10 space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-on-primary mx-auto">
-              <UserCheck className="w-7 h-7 text-accent" />
+            <div className="w-14 h-14 rounded-2xl bg-[#1B4332] text-emerald-300 flex items-center justify-center mx-auto shadow-md">
+              <ShieldCheck className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-bold text-foreground tracking-tight">
-              Portal Staf & Perangkat Desa
+            <h1 className="font-display font-bold text-2xl text-[#191A1E] tracking-tight">
+              Command Center Desa
             </h1>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Akses verifikasi antrean dan penanganan fasilitas desa SIGAP.
+            <p className="text-[13px] text-[#646973] leading-relaxed">
+              Autentikasi staf &amp; perangkat desa untuk verifikasi pengaduan dan ekspor Musrenbangdes.
             </p>
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-red-50 border border-destructive rounded-lg text-xs text-red-900 font-bold">
+            <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-[12px] text-red-800 font-bold">
               {errorMsg}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">
                 Email Staf Desa
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground">
-                  <Mail className="w-4 h-4" />
-                </div>
+                <Mail className="w-4 h-4 text-[#9E998E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@desa.go.id"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-border bg-white text-foreground focus:border-primary focus:outline-none min-h-[44px]"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">
                 Kata Sandi
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground">
-                  <Lock className="w-4 h-4" />
-                </div>
+                <Lock className="w-4 h-4 text-[#9E998E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-border bg-white text-foreground focus:border-primary focus:outline-none min-h-[44px]"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E]"
                 />
               </div>
             </div>
@@ -117,23 +113,23 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-primary hover:bg-secondary text-on-primary font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[48px] disabled:opacity-50"
+              className="w-full py-3.5 bg-[#1B4332] hover:bg-[#143628] text-[#FAF8F3] font-bold text-[14px] rounded-full transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
             >
               <span>{loading ? 'Memverifikasi...' : 'Masuk ke Command Center'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 text-emerald-300" />
             </button>
           </form>
 
           {/* Demo Login Button */}
-          <div className="pt-4 border-t border-border space-y-2">
-            <span className="text-xs text-muted-foreground block text-center font-medium">Akses Evaluator / Penilai:</span>
+          <div className="pt-4 border-t border-[#E6E2D8] space-y-2">
+            <span className="text-[11px] text-[#646973] block text-center font-medium">Akses Evaluator / Penilai:</span>
             <button
               type="button"
               onClick={handleDemoLogin}
-              className="w-full py-2.5 px-3 bg-muted hover:bg-slate-200 border border-border rounded-lg text-xs font-bold text-foreground transition-colors flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px]"
+              className="w-full py-3 px-4 bg-[#FAF8F3] hover:bg-white border border-[#E6E2D8] hover:border-emerald-500 rounded-full text-[12px] font-bold text-[#191A1E] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
-              <Sparkles className="w-4 h-4 text-accent" />
-              <span>Masuk Cepat sebagai Demo Admin Desa</span>
+              <Sparkles className="w-4 h-4 text-emerald-700" />
+              <span>1-Klik Masuk sebagai Demo Admin Desa</span>
             </button>
           </div>
         </div>

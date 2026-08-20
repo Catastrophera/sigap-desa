@@ -15,15 +15,13 @@ import {
   Sparkles,
   ChevronRight,
   ExternalLink,
-  MessageSquare,
-  Flame,
   Copy,
   Check,
   Share2,
-  Phone,
-  ShieldCheck,
   Clock,
   User,
+  ShieldCheck,
+  ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
 import { useToast } from '@/components/Toast';
@@ -94,29 +92,31 @@ export default function TicketTrackingPage() {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-24 text-center space-y-3">
-        <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <h2 className="text-sm font-bold text-foreground">Memuat data pengaduan #{ticketCode}...</h2>
+      <div className="max-w-3xl mx-auto px-4 py-32 text-center space-y-3">
+        <div className="w-9 h-9 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <h2 className="text-sm font-bold text-[#191A1E]">Memuat data pengaduan #{ticketCode}…</h2>
       </div>
     );
   }
 
   if (notFound || !report) {
     return (
-      <div className="max-w-md mx-auto px-4 py-24 text-center space-y-4">
-        <div className="w-14 h-14 bg-muted text-secondary rounded-full flex items-center justify-center mx-auto border border-border">
-          <AlertCircle className="w-7 h-7" />
+      <div className="max-w-md mx-auto px-4 py-32 text-center space-y-5">
+        <div className="w-16 h-16 bg-white text-emerald-700 rounded-full flex items-center justify-center mx-auto border border-[#E6E2D8] shadow-card-soft">
+          <AlertCircle className="w-8 h-8" />
         </div>
-        <h2 className="text-lg font-bold text-foreground">Nomor Tiket Tidak Ditemukan</h2>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Nomor tiket <span className="font-mono font-bold text-primary">#{ticketCode}</span> tidak terdaftar dalam basis data desa.
-        </p>
+        <div className="space-y-1">
+          <h2 className="font-display font-bold text-xl text-[#191A1E]">Nomor Tiket Tidak Ditemukan</h2>
+          <p className="text-[13px] text-[#646973] leading-relaxed">
+            Nomor tiket <span className="font-mono font-bold text-[#191A1E]">#{ticketCode}</span> tidak terdaftar dalam basis data desa.
+          </p>
+        </div>
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-primary text-on-primary rounded-lg text-xs font-bold hover:bg-secondary transition-colors cursor-pointer min-h-[44px]"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#1B4332] text-white rounded-full text-xs font-bold hover:bg-[#143628] transition-colors shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Kembali ke Beranda
+          <span>Kembali ke Beranda</span>
         </Link>
       </div>
     );
@@ -131,52 +131,53 @@ export default function TicketTrackingPage() {
   });
 
   return (
-    <div className="w-full bg-background min-h-screen pb-16">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-        {/* TOP BREADCRUMB & HEADER */}
-        <div className="space-y-3">
+    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+        {/* ── Top Navigation & Status Bar ──────────────── */}
+        <div className="space-y-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-secondary hover:text-primary transition-colors min-h-[36px]"
+            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#646973] hover:text-[#191A1E] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Kembali ke Daftar Pengaduan
+            <span>Kembali ke Daftar Pengaduan</span>
           </Link>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground font-mono tracking-tight">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#191A1E] font-mono tracking-tight">
                   #{report.ticket_code}
                 </h1>
                 <button
                   onClick={handleCopy}
-                  className="p-1.5 rounded-md text-secondary hover:text-primary hover:bg-muted cursor-pointer border border-border"
+                  className="p-1.5 rounded-xl text-slate-600 hover:text-black hover:bg-[#FAF8F3] cursor-pointer border border-[#E6E2D8] transition-colors"
                   title="Salin Nomor Tiket"
                   aria-label="Salin nomor tiket"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 font-medium">Terdaftar pada: {formattedDate}</p>
+              <p className="text-[12px] text-[#646973] font-medium">Terdaftar pada: {formattedDate}</p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={handleShareWA}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-border bg-white text-secondary hover:text-emerald-700 hover:bg-muted text-xs font-bold transition-colors cursor-pointer min-h-[44px]"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-[#E6E2D8] bg-[#FAF8F3] text-[#191A1E] hover:border-emerald-500 text-[12px] font-bold transition-colors cursor-pointer shadow-xs"
               >
-                <Share2 className="w-4 h-4 text-emerald-600" />
+                <Share2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Bagikan WhatsApp</span>
               </button>
 
               <span
-                className={`text-xs font-bold px-3.5 py-2.5 rounded-lg min-h-[44px] flex items-center ${
+                className={`text-[12px] font-bold px-4 py-2.5 rounded-full flex items-center shadow-xs ${
                   report.status === 'Selesai'
-                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
                     : report.status === 'Sedang Ditindak'
-                    ? 'bg-sky-100 text-sky-900 border border-sky-300'
-                    : 'bg-muted text-foreground border border-border'
+                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                    : 'bg-stone-100 text-stone-700 border border-stone-300'
                 }`}
               >
                 {report.status}
@@ -185,15 +186,15 @@ export default function TicketTrackingPage() {
           </div>
         </div>
 
-        {/* INTERACTIVE BEFORE-AFTER SLIDER (IF COMPLETED WITH BOTH PHOTOS) */}
+        {/* ── Before-After Slider if finished ──────────── */}
         {report.status === 'Selesai' && report.foto_url && report.foto_selesai_url && (
-          <div className="bg-card rounded-xl border border-border p-6 space-y-4 shadow-accessible-sm">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2 text-foreground font-bold text-sm">
+          <div className="bg-white rounded-3xl border border-[#E6E2D8] p-6 sm:p-7 space-y-4 shadow-card-soft">
+            <div className="flex items-center justify-between border-b border-[#E6E2D8] pb-3.5">
+              <div className="flex items-center gap-2 text-[#191A1E] font-bold text-[14px]">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                <span>Komparasi Hasil Perbaikan Lapangan</span>
+                <span className="font-display">Komparasi Hasil Fisik Perbaikan Lapangan</span>
               </div>
-              <span className="text-xs text-emerald-800 font-bold bg-emerald-100 px-2.5 py-1 rounded">
+              <span className="text-[11px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
                 Terverifikasi Selesai
               </span>
             </div>
@@ -207,105 +208,116 @@ export default function TicketTrackingPage() {
           </div>
         )}
 
-        {/* AUDIT TRAIL / ACTIVITY TIMELINE */}
-        <div className="bg-card rounded-xl p-6 sm:p-7 border border-border shadow-accessible-sm space-y-6">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-3">
-            Tahapan & Linimasa Penanganan
-          </h2>
+        {/* ── Status Stepper / Activity Timeline ──────── */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft space-y-6">
+          <div className="flex items-center justify-between border-b border-[#E6E2D8] pb-4">
+            <h2 className="font-display font-bold text-[15px] text-[#191A1E]">
+              Tahapan &amp; Linimasa Penanganan
+            </h2>
+            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+              SLA Tanggap Cepat
+            </span>
+          </div>
 
-          <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
-            {/* Step 1: Terdaftar */}
+          <div className="relative pl-7 space-y-7 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#E6E2D8]">
+            {/* Step 1 */}
             <div className="relative">
-              <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-primary border-2 border-white"></div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+              <div className="absolute -left-7 top-0.5 w-5 h-5 rounded-full bg-[#1B4332] border-2 border-white text-emerald-300 flex items-center justify-center shadow-xs">
+                <Check className="w-3 h-3 text-white" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-[13px] font-bold text-[#191A1E]">
                   <span>1. Laporan Didaftarkan oleh Warga</span>
-                  <span className="text-muted-foreground font-normal">({formattedDate})</span>
+                  <span className="text-[#646973] font-normal text-[11px]">({formattedDate})</span>
                 </div>
-                <p className="text-xs text-secondary leading-relaxed">
-                  Laporan masuk ke antrean dan otomatis terklasifikasi sebagai <strong>{report.kategori}</strong> dengan tingkat urgensi <strong className="text-primary">Prioritas {report.prioritas}</strong>.
+                <p className="text-[12px] text-[#646973] leading-relaxed">
+                  Laporan masuk ke antrean digital dan otomatis terklasifikasi sebagai <strong>{report.kategori}</strong> dengan urgensi <strong className="text-emerald-800">Prioritas {report.prioritas}</strong>.
                 </p>
               </div>
             </div>
 
-            {/* Step 2: Sedang Ditindak */}
+            {/* Step 2 */}
             <div className="relative">
               <div
-                className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full border-2 border-white ${
+                className={`absolute -left-7 top-0.5 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center shadow-xs ${
                   report.status === 'Sedang Ditindak' || report.status === 'Selesai'
-                    ? 'bg-accent'
-                    : 'bg-border'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-[#E6E2D8] text-slate-400'
                 }`}
-              ></div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                  <span>2. Verifikasi Lapangan & Alokasi Penanganan</span>
+              >
+                <Clock className="w-3 h-3" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-[13px] font-bold text-[#191A1E]">
+                  <span>2. Verifikasi Lapangan &amp; Alokasi Tindakan</span>
                   {report.status !== 'Menunggu Verifikasi' && (
-                    <span className="text-[10px] text-sky-900 font-bold bg-sky-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] text-emerald-900 font-bold bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
                       Sedang Diproses
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-secondary leading-relaxed">
+                <p className="text-[12px] text-[#646973] leading-relaxed">
                   {report.status === 'Menunggu Verifikasi'
-                    ? 'Menunggu verifikasi lapangan oleh perangkat desa atau kepala dusun terkait.'
-                    : report.catatan_admin || 'Petugas dan peralatan perbaikan telah ditugaskan ke lokasi.'}
+                    ? 'Menunggu verifikasi fisik oleh kepala dusun atau perangkat teknis desa.'
+                    : report.catatan_admin || 'Petugas dan peralatan perbaikan telah ditugaskan ke titik lokasi.'}
                 </p>
               </div>
             </div>
 
-            {/* Step 3: Selesai */}
+            {/* Step 3 */}
             <div className="relative">
               <div
-                className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full border-2 border-white ${
-                  report.status === 'Selesai' ? 'bg-emerald-600' : 'bg-border'
+                className={`absolute -left-7 top-0.5 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center shadow-xs ${
+                  report.status === 'Selesai' ? 'bg-[#1B4332] text-white' : 'bg-[#E6E2D8] text-slate-400'
                 }`}
-              ></div>
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                  <span>3. Perbaikan Selesai & Terverifikasi</span>
+              >
+                <CheckCircle2 className="w-3 h-3" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-[13px] font-bold text-[#191A1E]">
+                  <span>3. Perbaikan Selesai &amp; Arsip Musrenbangdes</span>
                   {report.status === 'Selesai' && (
-                    <span className="text-[10px] text-emerald-900 font-bold bg-emerald-100 px-2 py-0.5 rounded">
+                    <span className="text-[10px] text-emerald-900 font-bold bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
                       Tuntas
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-secondary leading-relaxed">
+                <p className="text-[12px] text-[#646973] leading-relaxed">
                   {report.status === 'Selesai'
-                    ? 'Fasilitas umum telah selesai diperbaiki dan bukti pengerjaan lapangan telah disetujui perangkat desa.'
-                    : 'Tiket akan ditutup setelah perbaikan lapangan selesai dan foto bukti diunggah.'}
+                    ? 'Fasilitas umum telah tuntas diperbaiki dan bukti pengerjaan lapangan telah disetujui perangkat desa.'
+                    : 'Tiket akan ditutup setelah perbaikan lapangan selesai dan foto bukti diunggah oleh staf.'}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* DETAIL ISU CARD */}
-        <div className="bg-card rounded-xl p-6 sm:p-7 border border-border shadow-accessible-sm space-y-5">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-3">
+        {/* ── Detail Isu Card ─────────────────────────── */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft space-y-5">
+          <h2 className="font-display font-bold text-[15px] text-[#191A1E] border-b border-[#E6E2D8] pb-3.5">
             Rincian Informasi Pengaduan
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-            <div>
-              <span className="text-muted-foreground block mb-0.5 font-medium">Kategori Fasilitas:</span>
-              <span className="font-bold text-foreground text-sm">{report.kategori}</span>
+            <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
+              <span className="text-[#646973] block mb-1 font-medium text-[11px]">Kategori Fasilitas:</span>
+              <span className="font-bold text-[#191A1E] text-sm">{report.kategori}</span>
             </div>
 
-            <div>
-              <span className="text-muted-foreground block mb-0.5 font-medium">Wilayah Dusun:</span>
-              <span className="font-bold text-foreground text-sm">{report.dusun}</span>
+            <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
+              <span className="text-[#646973] block mb-1 font-medium text-[11px]">Wilayah Dusun:</span>
+              <span className="font-bold text-[#191A1E] text-sm">{report.dusun}</span>
             </div>
 
-            <div>
-              <span className="text-muted-foreground block mb-0.5 font-medium">Tingkat Urgensi (AI):</span>
+            <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
+              <span className="text-[#646973] block mb-1 font-medium text-[11px]">Tingkat Urgensi AI:</span>
               <span
-                className={`font-bold px-2 py-1 rounded inline-block text-xs ${
+                className={`font-bold px-2.5 py-0.5 rounded-full inline-block text-[11px] ${
                   report.prioritas === 'Tinggi'
-                    ? 'bg-destructive text-on-destructive'
+                    ? 'bg-red-50 text-red-700 border border-red-200'
                     : report.prioritas === 'Sedang'
-                    ? 'bg-amber-100 text-amber-900'
-                    : 'bg-muted text-secondary'
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                    : 'bg-stone-100 text-stone-700 border border-stone-200'
                 }`}
               >
                 Prioritas {report.prioritas}
@@ -314,37 +326,38 @@ export default function TicketTrackingPage() {
           </div>
 
           <div>
-            <span className="text-xs text-muted-foreground block mb-1 font-medium">Deskripsi Pelapor:</span>
-            <div className="p-4 bg-muted/40 rounded-lg border border-border text-xs sm:text-sm text-foreground leading-relaxed">
+            <span className="text-[12px] text-[#646973] block mb-1.5 font-bold">Deskripsi Pelapor:</span>
+            <div className="p-4 bg-[#FAF8F3] rounded-2xl border border-[#E6E2D8] text-[13px] text-[#191A1E] leading-relaxed">
               {report.deskripsi}
             </div>
           </div>
 
-          {/* Foto Kerusakan jika tidak ada slider */}
+          {/* Photo if single photo */}
           {(!report.foto_selesai_url || report.status !== 'Selesai') && report.foto_url && (
             <div>
-              <span className="text-xs text-muted-foreground block mb-1.5 font-medium">Foto Bukti Terlampir:</span>
-              <div className="max-w-md h-60 rounded-lg overflow-hidden border border-border">
+              <span className="text-[12px] text-[#646973] block mb-1.5 font-bold">Foto Bukti Terlampir:</span>
+              <div className="max-w-md h-64 rounded-2xl overflow-hidden border border-[#E6E2D8]">
                 <img src={report.foto_url} alt="Foto Kerusakan" className="w-full h-full object-cover" />
               </div>
             </div>
           )}
 
-          <div className="pt-3 flex items-center justify-between text-xs text-muted-foreground border-t border-border">
-            <span className="flex items-center gap-1 font-mono font-bold text-foreground">
-              <MapPin className="w-4 h-4 text-accent" />
+          <div className="pt-3 flex items-center justify-between text-[12px] text-[#646973] border-t border-[#E6E2D8]">
+            <span className="flex items-center gap-1.5 font-mono font-bold text-[#191A1E]">
+              <MapPin className="w-4 h-4 text-emerald-700" />
               {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
             </span>
             <a
               href={`https://www.google.com/maps?q=${report.latitude},${report.longitude}`}
               target="_blank"
               rel="noreferrer"
-              className="text-accent hover:text-accent-hover font-bold inline-flex items-center gap-1 min-h-[36px]"
+              className="text-emerald-700 hover:text-emerald-900 font-bold inline-flex items-center gap-1 min-h-[36px]"
             >
-              Buka di Google Maps <ExternalLink className="w-3.5 h-3.5" />
+              Buka Google Maps <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
+
       </div>
     </div>
   );

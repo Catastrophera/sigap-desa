@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import {
@@ -12,12 +14,22 @@ import {
   ChevronRight,
   Search,
   MapPin,
-  Flame,
   Sparkles,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
 import { LIST_DUSUN } from '@/lib/geo-config';
-import MapViewer from '@/components/MapViewer';
+import nextDynamic from 'next/dynamic';
+
+const MapViewer = nextDynamic(() => import('@/components/MapViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[600px] w-full rounded-3xl bg-[#FAF8F3] border border-[#E6E2D8] flex items-center justify-center text-[#646973] text-xs font-bold">
+      Memuat WebGIS Desa…
+    </div>
+  ),
+});
 
 export default function PetaPage() {
   const [reports, setReports] = useState<Aduan[]>([]);
@@ -66,48 +78,62 @@ export default function PetaPage() {
   const urgent = reports.filter((r) => r.prioritas === 'Tinggi' && r.status !== 'Selesai').length;
 
   return (
-    <div className="w-full bg-[#F8FAFC] min-h-screen pb-24 selection:bg-sky-100 selection:text-sky-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-        {/* HEADER & METRIC COUNTERS */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-              <MapIcon className="w-7 h-7 text-sky-600" />
-              Peta Sebaran WebGIS Fasilitas Desa
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
-              Pemetaan spasial persebaran titik kerusakan infrastruktur di seluruh wilayah dusun.
-            </p>
-          </div>
+    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
 
-          {/* Metric Badges */}
-          <div className="flex items-center gap-2 text-xs font-bold">
-            <div className="bg-white border border-slate-200 px-3.5 py-2 rounded-2xl text-slate-800 shadow-xs">
-              <span className="text-slate-400 text-[10px] block">Total Titik</span>
-              <span className="text-base font-black text-slate-900">{total}</span>
+        {/* ── Header & Metric Counters ─────────────────── */}
+        <div className="space-y-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#646973] hover:text-[#191A1E] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Kembali ke Beranda</span>
+          </Link>
+
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="space-y-1 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+                <MapPin className="w-3.5 h-3.5" />
+                <span>Geospasial WebGIS Desa</span>
+              </div>
+              <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#191A1E] tracking-tight">
+                Peta Sebaran Titik Fasilitas Desa
+              </h1>
+              <p className="text-[13px] text-[#646973] leading-relaxed">
+                Visualisasi spasial seluruh aduan kerusakan infrastruktur di wilayah 15 dusun untuk efisiensi survei dan penanganan.
+              </p>
             </div>
-            <div className="bg-red-50 border border-red-200 px-3.5 py-2 rounded-2xl text-red-800 shadow-xs">
-              <span className="text-red-600 text-[10px] block">Urgent (ML)</span>
-              <span className="text-base font-black text-red-700">{urgent}</span>
-            </div>
-            <div className="bg-sky-50 border border-sky-200 px-3.5 py-2 rounded-2xl text-sky-800 shadow-xs">
-              <span className="text-sky-600 text-[10px] block">Sedang Ditindak</span>
-              <span className="text-base font-black text-sky-700">{proses}</span>
-            </div>
-            <div className="bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-2xl text-emerald-800 shadow-xs">
-              <span className="text-emerald-600 text-[10px] block">Selesai</span>
-              <span className="text-base font-black text-emerald-700">{selesai}</span>
+
+            {/* Metric Pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <div className="bg-[#FAF8F3] border border-[#E6E2D8] p-3 rounded-2xl text-center">
+                <span className="text-[#646973] text-[10px] uppercase font-bold block">Total Titik</span>
+                <span className="font-display text-xl font-bold text-[#191A1E]">{total}</span>
+              </div>
+              <div className="bg-red-50 border border-red-200 p-3 rounded-2xl text-center">
+                <span className="text-red-700 text-[10px] uppercase font-bold block">Prioritas Tinggi</span>
+                <span className="font-display text-xl font-bold text-red-700">{urgent}</span>
+              </div>
+              <div className="bg-emerald-100 border border-emerald-300 p-3 rounded-2xl text-center">
+                <span className="text-emerald-900 text-[10px] uppercase font-bold block">Ditindak</span>
+                <span className="font-display text-xl font-bold text-emerald-900">{proses}</span>
+              </div>
+              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-center">
+                <span className="text-emerald-800 text-[10px] uppercase font-bold block">Selesai</span>
+                <span className="font-display text-xl font-bold text-emerald-800">{selesai}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* FILTER BAR */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
+        {/* ── Filter Bar & Legend ──────────────────────── */}
+        <div className="bg-white p-4 sm:p-5 rounded-3xl border border-[#E6E2D8] flex flex-wrap items-center justify-between gap-3 shadow-card-soft">
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={filterDusun}
               onChange={(e) => setFilterDusun(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none min-h-[42px] cursor-pointer"
+              className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
               <option value="Semua">Semua Dusun</option>
               {LIST_DUSUN.map((d) => (
@@ -120,7 +146,7 @@ export default function PetaPage() {
             <select
               value={filterKategori}
               onChange={(e) => setFilterKategori(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none min-h-[42px] cursor-pointer"
+              className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
               <option value="Semua">Semua Kategori</option>
               <option value="Jalan & Jembatan">Jalan & Jembatan</option>
@@ -136,7 +162,7 @@ export default function PetaPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none min-h-[42px] cursor-pointer"
+              className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
               <option value="Semua">Semua Status</option>
               <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
@@ -146,86 +172,87 @@ export default function PetaPage() {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 text-xs font-bold text-slate-600">
+          <div className="flex items-center gap-4 text-[12px] font-semibold text-[#646973]">
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-red-600"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"></span>
               <span>Prioritas Tinggi</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-              <span>Sedang</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              <span>Sedang Ditindak</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-emerald-600"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#1B4332]"></span>
               <span>Selesai</span>
             </span>
           </div>
         </div>
 
-        {/* MAP & LIST SPLIT */}
+        {/* ── Map & Side Drawer Split ─────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* MAP CONTAINER (8 Cols) */}
-          <div className="lg:col-span-8 rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+          {/* Map */}
+          <div className="lg:col-span-8">
             <MapViewer
               reports={filteredReports}
               selectedReportId={selectedReportId}
-              heightClass="h-[580px]"
+              heightClass="h-[600px]"
+              theme="light"
               onMarkerClick={(rep) => setSelectedReportId(rep.id)}
             />
           </div>
 
-          {/* LIST CONTAINER (4 Cols) */}
-          <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-4 flex flex-col h-[580px] shadow-sm">
-            <div className="border-b border-slate-100 pb-3 mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-black text-slate-900">
+          {/* Side Drawer List */}
+          <div className="lg:col-span-4 bg-white rounded-3xl border border-[#E6E2D8] p-5 flex flex-col h-[600px] shadow-card-soft">
+            <div className="border-b border-[#E6E2D8] pb-3 mb-3 flex items-center justify-between">
+              <h3 className="font-display font-bold text-sm text-[#191A1E]">
                 Daftar Titik ({filteredReports.length})
               </h3>
-              <span className="text-xs text-slate-400 font-medium">Klik untuk zoom lokasi</span>
+              <span className="text-[11px] text-[#646973] font-medium">Klik untuk zoom</span>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
               {filteredReports.length === 0 ? (
-                <div className="text-center py-20 text-slate-400 text-xs font-bold">
-                  Tidak ada titik yang memenuhi filter.
+                <div className="text-center py-20 text-[#9E998E] text-xs font-bold">
+                  Tidak ada titik yang memenuhi kriteria filter.
                 </div>
               ) : (
                 filteredReports.map((item) => (
                   <div
                     key={item.id}
                     onClick={() => setSelectedReportId(item.id)}
-                    className={`p-3.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                    className={`p-4 rounded-2xl border text-xs cursor-pointer transition-all ${
                       selectedReportId === item.id
-                        ? 'border-sky-500 bg-sky-50/70 shadow-xs'
-                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'border-[#1B4332] bg-[#FAF8F3] shadow-sm'
+                        : 'border-[#E6E2D8] hover:border-emerald-500 hover:bg-[#FAF8F3]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1 mb-1.5">
-                      <span className="font-mono font-extrabold text-sky-700 text-xs">
+                      <span className="font-mono font-bold text-[#191A1E] bg-white border border-[#E6E2D8] px-2 py-0.5 rounded-full text-[11px]">
                         #{item.ticket_code}
                       </span>
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           item.status === 'Selesai'
                             ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                             : item.status === 'Sedang Ditindak'
-                            ? 'bg-sky-50 text-sky-800 border border-sky-200'
-                            : 'bg-slate-100 text-slate-700'
+                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            : 'bg-stone-100 text-stone-700 border border-stone-200'
                         }`}
                       >
                         {item.status}
                       </span>
                     </div>
 
-                    <h4 className="font-bold text-slate-900 text-xs line-clamp-1">{item.kategori}</h4>
-                    <p className="text-slate-600 text-xs mt-1 line-clamp-2 leading-relaxed font-normal">
+                    <h4 className="font-display font-bold text-[#191A1E] text-[13px] line-clamp-1">{item.kategori}</h4>
+                    <p className="text-[#646973] text-[12px] mt-1 line-clamp-2 leading-relaxed">
                       {item.deskripsi}
                     </p>
 
-                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                      <span className="font-bold text-slate-800">{item.dusun}</span>
+                    <div className="mt-3 pt-2 border-t border-[#E6E2D8] flex items-center justify-between text-[11px] text-[#646973]">
+                      <span className="font-bold text-[#191A1E]">{item.dusun}</span>
                       <Link
                         href={`/lacak/${item.ticket_code}`}
-                        className="text-sky-600 font-bold hover:underline inline-flex items-center gap-0.5"
+                        className="text-emerald-800 font-bold hover:underline inline-flex items-center gap-0.5"
                       >
                         Detail <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
@@ -236,6 +263,7 @@ export default function PetaPage() {
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

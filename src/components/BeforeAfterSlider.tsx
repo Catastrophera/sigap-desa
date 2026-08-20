@@ -15,8 +15,8 @@ export default function BeforeAfterSlider({
   beforeImage,
   afterImage,
   beforeLabel = 'Kondisi Awal (Pelaporan)',
-  afterLabel = 'Hasil Perbaikan (Selesai)',
-  heightClass = 'h-72 sm:h-80',
+  afterLabel = 'Hasil Penanganan (Selesai)',
+  heightClass = 'h-72 sm:h-84',
 }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -56,16 +56,16 @@ export default function BeforeAfterSlider({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onTouchMove={handleTouchMove}
-      className={`relative ${heightClass} w-full rounded-2xl overflow-hidden select-none cursor-ew-resize border border-slate-200 shadow-soft-sm bg-slate-900`}
+      className={`relative ${heightClass} w-full rounded-3xl overflow-hidden select-none cursor-ew-resize border border-[#E6E2D8] shadow-card-soft bg-[#191A1E]`}
     >
       {/* After Image (Background / Full Width) */}
       <img
         src={afterImage}
-        alt="After repair"
+        alt="Hasil perbaikan fasilitas"
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       />
-      <div className="absolute bottom-3 right-3 z-10">
-        <span className="text-[10px] font-bold bg-emerald-600/90 backdrop-blur-xs text-white px-2.5 py-1 rounded-md shadow-sm">
+      <div className="absolute bottom-3.5 right-3.5 z-10">
+        <span className="text-[11px] font-bold bg-[#1B4332] text-white px-3 py-1 rounded-full shadow-md border border-[#2D6A4F]">
           {afterLabel}
         </span>
       </div>
@@ -77,12 +77,12 @@ export default function BeforeAfterSlider({
       >
         <img
           src={beforeImage}
-          alt="Before repair"
+          alt="Kondisi awal pelaporan"
           className="absolute inset-0 w-full h-full object-cover max-w-none pointer-events-none"
           style={{ width: containerRef.current ? `${containerRef.current.offsetWidth}px` : '100%' }}
         />
-        <div className="absolute bottom-3 left-3 z-10">
-          <span className="text-[10px] font-bold bg-slate-900/80 backdrop-blur-xs text-white px-2.5 py-1 rounded-md shadow-sm">
+        <div className="absolute bottom-3.5 left-3.5 z-10">
+          <span className="text-[11px] font-bold bg-[#191A1E] text-white px-3 py-1 rounded-full shadow-md border border-[#2E3238]">
             {beforeLabel}
           </span>
         </div>
@@ -96,17 +96,17 @@ export default function BeforeAfterSlider({
         onTouchStart={() => setIsDragging(true)}
       >
         {/* Line */}
-        <div className="absolute top-0 bottom-0 -left-[1.5px] w-[3px] bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)]"></div>
+        <div className="absolute top-0 bottom-0 -left-[1.5px] w-[3px] bg-white shadow-[0_0_12px_rgba(0,0,0,0.6)]"></div>
 
         {/* Handle Button */}
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white text-slate-800 shadow-lg border border-slate-200 flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-110 transition-transform">
-          <ChevronsLeftRight className="w-4 h-4 text-slate-700" />
+        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white text-[#191A1E] shadow-xl border border-[#E6E2D8] flex items-center justify-center cursor-grab active:cursor-grabbing hover:scale-110 transition-transform">
+          <ChevronsLeftRight className="w-4 h-4 text-[#191A1E]" />
         </div>
       </div>
 
       {/* Hint overlay */}
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none bg-black/40 backdrop-blur-xs text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full z-10 border border-white/20">
-        Geser garis untuk melihat perbandingan
+      <div className="absolute top-3.5 left-1/2 -translate-x-1/2 pointer-events-none bg-[#191A1E] text-white text-[11px] font-semibold px-3.5 py-1 rounded-full z-10 border border-[#2E3238] shadow-md">
+        Geser untuk melihat perbandingan fisik
       </div>
     </div>
   );

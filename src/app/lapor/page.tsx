@@ -3,13 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Camera, Send, Sparkles, CheckCircle2, Loader2, Info } from 'lucide-react';
+import { ArrowLeft, Camera, Send, Sparkles, CheckCircle2, Loader2, Info, MapPin, User, Phone, ArrowRight, ShieldCheck, Copy, Check } from 'lucide-react';
 import { supabase, LIST_KATEGORI, KategoriAduan } from '@/lib/supabase';
 import { LIST_DUSUN, VILLAGE_CENTER_COORDINATES } from '@/lib/geo-config';
 import { classifyReport } from '@/lib/classifier';
 import { convertToWebP } from '@/lib/image-compress';
 import { useToast } from '@/components/Toast';
-import MapPicker from '@/components/MapPicker';
+import nextDynamic from 'next/dynamic';
+
+const MapPicker = nextDynamic(() => import('@/components/MapPicker'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-72 w-full rounded-2xl bg-[#FAF8F3] border border-[#E6E2D8] flex items-center justify-center text-[#646973] text-xs font-bold">
+      Memuat peta interaktif…
+    </div>
+  ),
+});
 
 export default function LaporPage() {
   const router = useRouter();
@@ -29,6 +38,7 @@ export default function LaporPage() {
   const [coords, setCoords]         = useState({ latitude: VILLAGE_CENTER_COORDINATES.latitude, longitude: VILLAGE_CENTER_COORDINATES.longitude });
   const [submitting, setSubmitting] = useState(false);
   const [ticket, setTicket]         = useState<string | null>(null);
+  const [copied, setCopied]         = useState(false);
 
   // 1. Instant local typing feedback (Layer 1 - 0ms)
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -40,18 +50,20 @@ export default function LaporPage() {
       setKategori(localPred.kategori);
       setPrioritas(localPred.prioritas);
       setAiConfidence(localPred.confidenceKategori || 85);
-      setAiReason('Model AI Lokal (TF-IDF)');
+      setAiReason('Model AI Cepat (TF-IDF)');
     } else {
       setAiConfidence(null);
       setAiReason(null);
     }
   };
 
-  // 2. Debounced deep AI evaluation via /api/classify (Layer 2 - LLM with local fallback)
+  // 2. Guardrail 3: Debounced AI classification with AbortController to cancel obsolete requests
   useEffect(() => {
     if (deskripsi.trim().length < 8) return;
 
+    const controller = new AbortController();
     setIsAnalyzing(true);
+
     const timer = setTimeout(async () => {
       try {
         const res = await fetch('/api/classify', {
@@ -62,6 +74,7 @@ export default function LaporPage() {
             fallbackKategori: kategori,
             fallbackPrioritas: prioritas,
           }),
+          signal: controller.signal,
         });
 
         if (res.ok) {
@@ -71,14 +84,21 @@ export default function LaporPage() {
           if (data.confidence) setAiConfidence(data.confidence);
           if (data.alasan) setAiReason(data.alasan);
         }
-      } catch (err) {
-        console.warn('API Classify error, using local classification:', err);
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          // Request was aborted due to new user typing, ignore silently
+          return;
+        }
+        console.warn('API Classify fallback to local:', err);
       } finally {
         setIsAnalyzing(false);
       }
-    }, 550);
+    }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort(); // Cancel previous in-flight request
+    };
   }, [deskripsi]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +110,10 @@ export default function LaporPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!deskripsi.trim()) { showToast('Mohon ceritakan kondisi kerusakannya.', 'error'); return; }
+    if (!deskripsi.trim()) {
+      showToast('Mohon ceritakan kondisi kerusakan fasilitas.', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
       let fotoUrl: string | null = null;
@@ -103,7 +126,9 @@ export default function LaporPage() {
             const { data } = supabase.storage.from('aduan-images').getPublicUrl(path);
             fotoUrl = data.publicUrl;
           }
-        } catch {}
+        } catch (err) {
+          console.warn('Upload warning:', err);
+        }
       }
 
       const code = `SIGAP-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -125,98 +150,132 @@ export default function LaporPage() {
       setTicket(code);
       showToast('Laporan berhasil dikirim ke perangkat desa!', 'success');
     } catch (err: any) {
-      showToast('Gagal mengirim: ' + (err.message || 'Terjadi kesalahan'), 'error');
+      showToast('Gagal mengirim: ' + (err.message || 'Terjadi kesalahan sistem'), 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
-  /* ── Step label helper ── */
-  const Step = ({ n, label, sub }: { n: number; label: string; sub?: string }) => (
-    <div className="flex items-start gap-3 border-b border-slate-100 pb-4 mb-5">
-      <div className="w-7 h-7 rounded-full bg-[#0369A1] text-white text-[13px] font-bold flex items-center justify-center shrink-0 mt-0.5">{n}</div>
+  const copyTicket = () => {
+    if (ticket) {
+      navigator.clipboard.writeText(ticket);
+      setCopied(true);
+      showToast('Nomor tiket berhasil disalin.', 'success');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  /* ── Step Header Helper ── */
+  const StepHeader = ({ n, title, subtitle }: { n: number; title: string; subtitle?: string }) => (
+    <div className="flex items-start gap-3.5 border-b border-[#E6E2D8] pb-4 mb-5">
+      <div className="w-8 h-8 rounded-full bg-[#1B4332] text-emerald-300 text-[13px] font-bold flex items-center justify-center shrink-0 shadow-xs">
+        {n}
+      </div>
       <div>
-        <h2 className="text-[15px] font-bold text-[#0F172A]">{label}</h2>
-        {sub && <p className="text-[12px] text-slate-500 mt-0.5">{sub}</p>}
+        <h2 className="font-display font-bold text-[16px] text-[#191A1E] leading-snug">{title}</h2>
+        {subtitle && <p className="text-[12px] text-[#646973] mt-0.5">{subtitle}</p>}
       </div>
     </div>
   );
 
   return (
-    <div id="main-content" className="w-full bg-[#F8FAFC] min-h-screen pb-24">
+    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
 
-      {/* Page Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-          <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-bold text-slate-500 hover:text-slate-900 transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0369A1] flex items-center justify-center shadow-sm">
-              <Camera className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-[22px] sm:text-[26px] font-bold text-[#0F172A]">Formulir Pengaduan Fasilitas Desa</h1>
-              <p className="text-[13px] text-slate-500">Isi form di bawah ini untuk melaporkan kerusakan fasilitas ke perangkat desa.</p>
-            </div>
+      {/* ── Top Header ──────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 mb-8 space-y-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#646973] hover:text-[#191A1E] transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
+        </Link>
+
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Formulir Pelaporan Warga Berbasis AI</span>
           </div>
+          <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#191A1E] tracking-tight">
+            Laporkan Kerusakan Fasilitas Desa
+          </h1>
+          <p className="text-[14px] text-[#646973] leading-relaxed">
+            Sampaikan laporan kerusakan jalan, lampu padam, air, atau drainase. Sistem Machine Learning akan secara otomatis merekomendasikan sektor penanganan dan tingkat urgensi.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
         {ticket ? (
-          /* ── Success ──────────────────────────── */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 sm:p-10 text-center space-y-6 max-w-lg mx-auto">
-            <div className="w-16 h-16 rounded-2xl bg-green-50 border border-green-200 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-9 h-9 text-green-600" />
+          /* ── SUCCESS STATE ────────────────────────── */
+          <div className="bg-white rounded-3xl sm:rounded-4xl border border-[#E6E2D8] shadow-card-soft p-8 sm:p-12 text-center space-y-6 max-w-lg mx-auto animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-emerald-600 shadow-xs">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
+
             <div className="space-y-2">
-              <h2 className="text-[22px] font-bold text-[#0F172A]">Laporan Berhasil Diterima!</h2>
-              <p className="text-[13px] text-slate-600 leading-relaxed">
-                Laporan Anda telah masuk ke antrean prioritas tim teknis desa. Pantau perkembangan menggunakan nomor tiket di bawah ini.
+              <h2 className="font-display font-bold text-2xl text-[#191A1E]">Laporan Berhasil Terkirim!</h2>
+              <p className="text-[13px] text-[#646973] leading-relaxed">
+                Pengaduan Anda telah tercatat pada Command Center perangkat desa dan siap diverifikasi. Simpan nomor tiket berikut untuk memantau progres:
               </p>
-              <div className="mt-4">
-                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mb-1">Nomor Tiket Laporan:</p>
-                <div className="font-mono text-[24px] font-bold text-[#0369A1] bg-blue-50 py-3 rounded-xl border border-blue-200">
-                  #{ticket}
+              
+              <div className="pt-3">
+                <div className="inline-flex items-center justify-between gap-3 bg-[#FAF8F3] border border-[#E6E2D8] rounded-2xl px-5 py-3 shadow-inner max-w-xs mx-auto w-full">
+                  <span className="font-mono font-extrabold text-xl text-[#191A1E]">#{ticket}</span>
+                  <button
+                    onClick={copyTicket}
+                    className="p-1.5 rounded-xl hover:bg-white text-slate-600 transition-colors border border-transparent hover:border-[#E6E2D8] cursor-pointer"
+                    title="Salin Nomor Tiket"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             </div>
-            <div className="space-y-2 pt-2">
-              <button onClick={() => router.push(`/lacak/${ticket}`)}
-                className="w-full py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-bold text-[14px] transition-colors cursor-pointer min-h-[46px]"
+
+            <div className="space-y-2.5 pt-4 border-t border-[#E6E2D8]">
+              <button
+                onClick={() => router.push(`/lacak/${ticket}`)}
+                className="w-full py-3.5 bg-[#1B4332] hover:bg-[#143628] text-[#FAF8F3] rounded-full font-bold text-[14px] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                Pantau Progres Penanganan →
+                <span>Pantau Progres Penanganan</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-              <Link href="/" className="block text-[13px] font-bold text-slate-400 hover:text-slate-700 py-2 transition-colors cursor-pointer">
+              <Link
+                href="/"
+                className="block text-[13px] font-bold text-[#646973] hover:text-[#191A1E] py-2 transition-colors cursor-pointer"
+              >
                 Kembali ke Beranda
               </Link>
             </div>
           </div>
         ) : (
-          /* ── Form ─────────────────────────────── */
-          <form onSubmit={handleSubmit} className="space-y-5">
+          /* ── FORM ─────────────────────────────────── */
+          <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Step 1 – Foto */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <Step n={1} label="Foto Bukti Kerusakan" sub="Opsional, namun sangat membantu petugas menilai kondisi lapangan." />
-              <div className="border-2 border-dashed border-slate-300 hover:border-[#0369A1] rounded-xl p-6 text-center transition-colors bg-slate-50">
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7">
+              <StepHeader n={1} title="Foto Kondisi Lapangan" subtitle="Opsional, namun sangat disarankan untuk membantu penilaian fisik oleh staf teknis desa." />
+              <div className="border-2 border-dashed border-[#E6E2D8] hover:border-emerald-500 rounded-2xl p-6 text-center transition-colors bg-[#FAF8F3]">
                 {preview ? (
                   <div className="space-y-3">
-                    <img src={preview} alt="Pratinjau foto" className="h-52 w-full object-cover rounded-xl border border-slate-200" />
-                    <button type="button" onClick={() => { setFile(null); setPreview(null); }}
+                    <img src={preview} alt="Pratinjau foto laporan" className="h-56 w-full object-cover rounded-2xl border border-[#E6E2D8]" />
+                    <button
+                      type="button"
+                      onClick={() => { setFile(null); setPreview(null); }}
                       className="text-[12px] font-bold text-red-600 hover:underline cursor-pointer"
-                    >Hapus / Ambil Ulang Foto</button>
+                    >
+                      Hapus / Ambil Ulang Foto
+                    </button>
                   </div>
                 ) : (
-                  <label className="cursor-pointer flex flex-col items-center gap-2.5 py-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
-                      <Camera className="w-6 h-6 text-[#0369A1]" />
+                  <label className="cursor-pointer flex flex-col items-center gap-3 py-5">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+                      <Camera className="w-6 h-6" />
                     </div>
-                    <div>
-                      <p className="font-bold text-[14px] text-slate-800">Tekan di sini untuk memilih foto</p>
-                      <p className="text-[12px] text-slate-500 mt-0.5">JPG, PNG, atau langsung dari kamera HP</p>
+                    <div className="space-y-0.5">
+                      <p className="font-bold text-[14px] text-[#191A1E]">Pilih foto atau ambil dari kamera HP</p>
+                      <p className="text-[12px] text-[#646973]">Otomatis dikompresi WebP (Max 1MB &amp; 1920px)</p>
                     </div>
                     <input type="file" accept="image/*" className="sr-only" onChange={handleFile} />
                   </label>
@@ -224,39 +283,39 @@ export default function LaporPage() {
               </div>
             </div>
 
-            {/* Step 2 – Deskripsi + Hybrid Dual-Layer AI */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-              <Step n={2} label="Ceritakan Kondisi Kerusakan *" />
+            {/* Step 2 – Deskripsi & AI Classifier */}
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7 space-y-4">
+              <StepHeader n={2} title="Ceritakan Kerusakan Fasilitas *" subtitle="Tuliskan secara jelas titik lokasi, jenis masalah, dan dampak yang ditimbulkan." />
 
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 <textarea
                   rows={4}
                   required
                   value={deskripsi}
                   onChange={handleDescriptionChange}
-                  placeholder="Contoh: Jalan aspal di dekat jembatan Dusun Krajan ambles 20cm dan sudah mengakibatkan 2 warga jatuh saat malam hari..."
-                  className="w-full rounded-xl border border-slate-300 p-3.5 text-[14px] text-slate-800 bg-white focus:border-[#0369A1] focus:outline-none leading-relaxed resize-none shadow-2xs"
+                  placeholder="Contoh: Jalan aspal di dekat jembatan Dusun Krajan ambles sedalam 20cm dan membahayakan pengendara motor di malam hari..."
+                  className="w-full rounded-2xl border border-[#E6E2D8] p-4 text-[14px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:border-[#191A1E] focus:outline-none leading-relaxed resize-none transition-colors"
                 />
 
-                {/* Hybrid Dual-Layer AI Detection Badge */}
-                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3.5 space-y-2 text-[12px]">
+                {/* AI Detection Card */}
+                <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-2 text-[12px]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       {isAnalyzing ? (
-                        <Loader2 className="w-4 h-4 text-[#0369A1] animate-spin shrink-0" />
+                        <Loader2 className="w-4 h-4 text-emerald-700 animate-spin shrink-0" />
                       ) : (
-                        <Sparkles className="w-4 h-4 text-[#0369A1] shrink-0" />
+                        <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
                       )}
-                      <span className="text-slate-700 font-medium">
+                      <span className="text-[#191A1E] font-medium">
                         {isAnalyzing ? (
-                          <span className="text-[#0369A1] font-bold">AI sedang menganalisis narasi laporan...</span>
+                          <span className="text-emerald-800 font-bold">AI sedang mengevaluasi deskripsi…</span>
                         ) : (
                           <>
-                            Deteksi AI: <strong className="text-[#0F172A]">{kategori}</strong>
+                            Sektor Terdeteksi: <strong className="text-[#191A1E] font-bold">{kategori}</strong>
                           </>
                         )}
                         {aiConfidence && !isAnalyzing && (
-                          <span className="ml-2 text-[11px] font-bold text-[#0369A1] bg-blue-100 px-2 py-0.5 rounded-full">
+                          <span className="ml-2 text-[11px] font-bold text-emerald-900 bg-emerald-200 px-2 py-0.5 rounded-full">
                             {aiConfidence}% Akurat
                           </span>
                         )}
@@ -264,33 +323,33 @@ export default function LaporPage() {
                     </div>
 
                     {!isAnalyzing && (
-                      <span className={`font-bold px-2.5 py-1 rounded-lg border inline-flex items-center gap-1.5 self-start sm:self-auto ${
+                      <span className={`font-bold px-3 py-1 rounded-full border inline-flex items-center gap-1.5 self-start sm:self-auto text-[11px] ${
                         prioritas === 'Tinggi' ? 'bg-red-50 text-red-700 border-red-200'
-                        : prioritas === 'Sedang' ? 'bg-amber-50 text-amber-800 border-amber-200'
-                        : 'bg-slate-100 text-slate-700 border-slate-200'
+                        : prioritas === 'Sedang' ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                        : 'bg-stone-100 text-stone-700 border-stone-200'
                       }`}>
-                        Urgensi: Prioritas {prioritas}
+                        Urgensi: {prioritas}
                       </span>
                     )}
                   </div>
 
                   {aiReason && !isAnalyzing && (
-                    <div className="text-[11px] text-slate-500 border-t border-blue-100 pt-1.5 flex items-center gap-1">
-                      <Info className="w-3.5 h-3.5 text-slate-400" />
+                    <div className="text-[11px] text-[#646973] border-t border-emerald-200/80 pt-2 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                       <span>{aiReason}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Manual Override Option */}
+                {/* Category Manual Selector */}
                 <div className="pt-1">
-                  <label className="block text-[12px] font-bold text-slate-600 mb-1">
-                    Kategori Terpilih (Otomatis AI / Boleh Diganti Manual):
+                  <label className="block text-[12px] font-bold text-[#646973] mb-1.5">
+                    Kategori Terpilih (Hasil AI / Boleh disesuaikan manual):
                   </label>
                   <select
                     value={kategori}
                     onChange={(e) => setKategori(e.target.value as KategoriAduan)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-[13px] font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0369A1] min-h-[42px] cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] font-bold text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E] cursor-pointer"
                   >
                     {LIST_KATEGORI.map((cat) => (
                       <option key={cat} value={cat}>
@@ -302,57 +361,77 @@ export default function LaporPage() {
               </div>
             </div>
 
-            {/* Step 3 – Lokasi */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <Step n={3} label="Pilih Dusun & Titik Lokasi *" />
+            {/* Step 3 – Dusun & Map */}
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7">
+              <StepHeader n={3} title="Wilayah &amp; Titik Lokasi *" subtitle="Pilih dusun dan tentukan koordinat pada peta." />
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Wilayah Dusun:</label>
-                  <select value={dusun} onChange={e => setDusun(e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-3 py-3 text-[14px] text-slate-800 bg-white focus:outline-none focus:border-[#0369A1] min-h-[46px] cursor-pointer"
+                  <label className="block text-[13px] font-bold text-[#191A1E] mb-1.5">Wilayah Dusun:</label>
+                  <select
+                    value={dusun}
+                    onChange={e => setDusun(e.target.value)}
+                    className="w-full rounded-xl border border-[#E6E2D8] px-4 py-3 text-[14px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E] cursor-pointer"
                   >
                     {LIST_DUSUN.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Pin Titik Kerusakan di Peta:</label>
-                  <div className="rounded-xl overflow-hidden border border-slate-200">
-                    <MapPicker coords={coords} setCoords={setCoords} />
+                  <MapPicker coords={coords} setCoords={setCoords} />
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 – Identitas Pelapor */}
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7">
+              <StepHeader n={4} title="Identitas Pelapor (Opsional)" subtitle="Boleh dikosongkan jika Anda ingin melapor secara anonim." />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[13px] font-bold text-[#191A1E] mb-1.5">Nama Pelapor:</label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-[#9E998E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={nama}
+                      onChange={e => setNama(e.target.value)}
+                      placeholder="Pak Budi / Warga Dusun"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[13px] font-bold text-[#191A1E] mb-1.5">No. WhatsApp (Untuk info progres):</label>
+                  <div className="relative">
+                    <Phone className="w-4 h-4 text-[#9E998E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={kontak}
+                      onChange={e => setKontak(e.target.value)}
+                      placeholder="08123456789"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E]"
+                    />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Step 4 – Identitas */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <Step n={4} label="Identitas Pelapor" sub="Opsional — boleh dikosongkan untuk laporan anonim." />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Nama Lengkap:</label>
-                  <input type="text" value={nama} onChange={e => setNama(e.target.value)}
-                    placeholder="Pak Budi / Warga Dusun"
-                    className="w-full px-3 py-3 rounded-xl border border-slate-300 text-[14px] text-slate-800 focus:outline-none focus:border-[#0369A1] min-h-[46px]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">No. WhatsApp (opsional):</label>
-                  <input type="text" value={kontak} onChange={e => setKontak(e.target.value)}
-                    placeholder="08123456789"
-                    className="w-full px-3 py-3 rounded-xl border border-slate-300 text-[14px] text-slate-800 focus:outline-none focus:border-[#0369A1] min-h-[46px]"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Submit */}
-            <button type="submit" disabled={submitting}
-              className="w-full py-4 bg-[#0369A1] hover:bg-[#0284C7] disabled:opacity-50 text-white font-bold text-[15px] rounded-xl transition-all shadow-sm shadow-sky-700/20 flex items-center justify-center gap-2.5 cursor-pointer min-h-[54px] active:scale-[0.99]"
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-4 bg-[#1B4332] hover:bg-[#143628] disabled:opacity-50 text-[#FAF8F3] font-bold text-[15px] rounded-full transition-all shadow-xl flex items-center justify-center gap-3 cursor-pointer active:scale-98"
             >
-              <Send className="w-5 h-5" />
-              {submitting ? 'Sedang Mengirim Laporan…' : 'Kirim Laporan Sekarang'}
+              <Send className="w-5 h-5 text-emerald-300" />
+              <span>{submitting ? 'Sedang Mengirim Laporan…' : 'Kirim Laporan ke Perangkat Desa'}</span>
+              <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center ml-1">
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
+              </div>
             </button>
+
           </form>
         )}
+
       </div>
     </div>
   );

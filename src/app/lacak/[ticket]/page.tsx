@@ -81,7 +81,7 @@ export default function TicketTrackingPage() {
     const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
     const trackingUrl = `${siteUrl}/lacak/${report.ticket_code}`;
     const text = encodeURIComponent(
-      `*SIGAP DESA - Laporan Fasilitas #${report.ticket_code}*\n\n` +
+      `*SIGAP - KETINTANG - Laporan Fasilitas #${report.ticket_code}*\n\n` +
       `📌 *Isu:* ${report.kategori} (${report.dusun})\n` +
       `📊 *Status:* ${report.status}\n` +
       `🚨 *Prioritas:* ${report.prioritas}\n` +
@@ -131,7 +131,7 @@ export default function TicketTrackingPage() {
   });
 
   return (
-    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+    <div id="main-content" className="w-full bg-transparent min-h-screen pb-24 pt-24 sm:pt-28">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
         {/* ── Top Navigation & Status Bar ──────────────── */}

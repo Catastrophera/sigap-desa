@@ -29,25 +29,25 @@ const MapViewer = nextDynamic(() => import('@/components/MapViewer'), {
 
 /* ── 8 AI Categories Config ────────────────────────────── */
 const CATEGORIES = [
-  { key: 'Jalan & Jembatan',            label: 'Jalan & Jembatan',      icon: Construction, color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Penerangan Jalan',            label: 'Lampu Penerangan',       icon: Lightbulb,    color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Drainase & Irigasi',          label: 'Drainase & Irigasi',     icon: Droplets,     color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Air Bersih & Sanitasi',       label: 'Air Bersih & Sanitasi',  icon: Waves,        color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Persampahan & Lingkungan',    label: 'Persampahan',            icon: Trash2,       color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Gedung & Sarana Publik',      label: 'Sarana Publik',          icon: Building2,    color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Bencana & Darurat',           label: 'Bencana & Darurat',      icon: AlertTriangle,color: 'bg-emerald-50 text-emerald-800' },
-  { key: 'Masalah Lainnya',             label: 'Lainnya',                icon: HelpCircle,   color: 'bg-emerald-50 text-emerald-800' },
+  { key: 'Jalan & Jembatan',            label: 'Jalan & Jembatan',      icon: Construction, color: 'bg-orange-50 text-orange-800' },
+  { key: 'Penerangan Jalan',            label: 'Lampu Penerangan',       icon: Lightbulb,    color: 'bg-orange-50 text-orange-800' },
+  { key: 'Drainase & Irigasi',          label: 'Drainase & Irigasi',     icon: Droplets,     color: 'bg-orange-50 text-orange-800' },
+  { key: 'Air Bersih & Sanitasi',       label: 'Air Bersih & Sanitasi',  icon: Waves,        color: 'bg-orange-50 text-orange-800' },
+  { key: 'Persampahan & Lingkungan',    label: 'Persampahan',            icon: Trash2,       color: 'bg-orange-50 text-orange-800' },
+  { key: 'Gedung & Sarana Publik',      label: 'Sarana Publik',          icon: Building2,    color: 'bg-orange-50 text-orange-800' },
+  { key: 'Bencana & Darurat',           label: 'Bencana & Darurat',      icon: AlertTriangle,color: 'bg-orange-50 text-orange-800' },
+  { key: 'Masalah Lainnya',             label: 'Lainnya',                icon: HelpCircle,   color: 'bg-orange-50 text-orange-800' },
 ];
 
 const STATUS_BADGE: Record<string, { bg: string; text: string; border: string }> = {
-  'Selesai':             { bg: 'bg-emerald-50 text-emerald-800', text: 'Selesai', border: 'border-emerald-200' },
-  'Sedang Ditindak':     { bg: 'bg-emerald-100 text-emerald-900', text: 'Sedang Ditindak', border: 'border-emerald-300' },
+  'Selesai':             { bg: 'bg-orange-50 text-orange-900', text: 'Selesai', border: 'border-orange-200' },
+  'Sedang Ditindak':     { bg: 'bg-amber-100 text-amber-950', text: 'Sedang Ditindak', border: 'border-amber-300' },
   'Menunggu Verifikasi': { bg: 'bg-stone-100 text-stone-700', text: 'Menunggu Verifikasi', border: 'border-stone-200' },
 };
 
 const PRIORITY_BADGE: Record<string, { bg: string; text: string; border: string }> = {
   'Tinggi': { bg: 'bg-red-50 text-red-700', text: 'Prioritas Tinggi', border: 'border-red-200' },
-  'Sedang': { bg: 'bg-emerald-50 text-emerald-800', text: 'Prioritas Sedang', border: 'border-emerald-200' },
+  'Sedang': { bg: 'bg-orange-50 text-orange-800', text: 'Prioritas Sedang', border: 'border-orange-200' },
   'Rendah': { bg: 'bg-stone-100 text-stone-600', text: 'Prioritas Rendah', border: 'border-stone-200' },
 };
 
@@ -121,7 +121,7 @@ export default function HomePage() {
     e.stopPropagation();
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const text = encodeURIComponent(
-      `*[SIGAP Desa] Laporan Fasilitas Publik*\n\n📌 *Kategori:* ${item.kategori}\n🏡 *Wilayah:* ${item.dusun}\n📝 *Keterangan:* ${item.deskripsi}\n🔍 *Pantau Progres:* ${origin}/lacak/${item.ticket_code}`
+      `*[SIGAP - Ketintang] Laporan Fasilitas Publik*\n\n📌 *Kategori:* ${item.kategori}\n🏡 *Wilayah:* ${item.dusun}\n📝 *Keterangan:* ${item.deskripsi}\n🔍 *Pantau Progres:* ${origin}/lacak/${item.ticket_code}`
     );
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
@@ -175,37 +175,37 @@ export default function HomePage() {
   const completionRate = totalReports > 0 ? Math.round((selesaiCount / totalReports) * 100) : 100;
 
   return (
-    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+    <div id="main-content" className="w-full bg-transparent min-h-screen pb-24 pt-24 sm:pt-28">
 
       {/* ╔══════════════════════════════════════════════════════╗
           ║  HERO SECTION: Editorial Warm Aesthetic              ║
           ╚══════════════════════════════════════════════════════╝ */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 space-y-10" aria-label="Beranda SIGAP Desa">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-12 space-y-10" aria-label="Beranda SIGAP - Ketintang">
 
         {/* Top Tag & Big Editorial Headline */}
         <div className="space-y-5 text-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#E6E2D8] shadow-xs text-[12px] font-semibold text-[#191A1E]">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Platform Layanan Publik &amp; Infrastruktur Desa Berbasis AI</span>
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <span>Platform Layanan Publik &amp; Geotagging Fasilitas Ketintang Surabaya Berbasis AI</span>
           </div>
 
           <h1 className="font-display font-extrabold text-[34px] sm:text-[52px] lg:text-[60px] text-[#191A1E] leading-[1.08] tracking-tight">
-            Penanganan Fasilitas Desa
+            Penanganan Fasilitas Ketintang
             <br />
-            <span className="text-emerald-700">Cepat, Tepat, &amp; Tuntas.</span>
+            <span className="text-[#EA580C]">Cepat, Tepat, &amp; Tuntas.</span>
           </h1>
 
           <p className="text-[15px] sm:text-[17px] text-[#646973] max-w-2xl mx-auto leading-relaxed">
-            Laporkan jalan berlubang, lampu penerangan padam, drainase meluap, hingga masalah air bersih. Sistem Machine Learning otomatis mengklasifikasikan 8 sektor untuk penanganan cepat perangkat desa.
+            Laporkan jalan berlubang, lampu penerangan padam, saluran drainase, hingga masalah air bersih di kawasan Ketintang Surabaya. Sistem AI dan WebGIS memetakan penanganan secara presisi.
           </p>
 
           {/* Action Row */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
               href="/lapor"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-full bg-[#1B4332] hover:bg-[#143628] text-[#FAF8F3] text-[14px] font-bold transition-all shadow-lg active:scale-98 group cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-[14px] font-bold transition-all shadow-lg active:scale-98 group cursor-pointer"
             >
-              <Camera className="w-4.5 h-4.5 text-emerald-300" />
+              <Camera className="w-4.5 h-4.5 text-orange-200" />
               <span>+ Buat Laporan Kerusakan</span>
               <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform">
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
@@ -224,7 +224,7 @@ export default function HomePage() {
               />
               <button
                 type="submit"
-                className="px-4 py-2 rounded-full bg-[#1B4332] hover:bg-[#143628] text-white text-[12px] font-bold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-[12px] font-bold transition-colors cursor-pointer"
               >
                 Lacak
               </button>
@@ -244,13 +244,13 @@ export default function HomePage() {
           {/* Top solid pill badges */}
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
             <div className="bg-white px-4 py-2 rounded-full text-[12px] font-bold text-[#191A1E] shadow-md flex items-center gap-2 animate-soft-float border border-[#E6E2D8]">
-              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <Sparkles className="w-4 h-4 text-orange-600" />
               <span>Sistem AI Klasifikasi Instan Aktif</span>
             </div>
 
             <div className="bg-[#191A1E] border border-[#2E3238] px-4 py-2 rounded-full text-[12px] font-semibold text-white shadow-md flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>15 Dusun Terpantau Real-time</span>
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-ping" />
+              <span>Wilayah Ketintang Surabaya Terpantau Real-time</span>
             </div>
           </div>
 
@@ -261,7 +261,7 @@ export default function HomePage() {
               <div className="text-[11px] font-semibold text-[#646973] uppercase tracking-wider mt-0.5">Transparansi Publik</div>
             </div>
             <div className="bg-white rounded-2xl p-4 text-center border border-[#E6E2D8] shadow-md">
-              <div className="font-display font-extrabold text-2xl sm:text-3xl text-emerald-700">8 Sektor</div>
+              <div className="font-display font-extrabold text-2xl sm:text-3xl text-[#EA580C]">8 Sektor</div>
               <div className="text-[11px] font-semibold text-[#646973] uppercase tracking-wider mt-0.5">Klasifikasi AI</div>
             </div>
             <div className="bg-white rounded-2xl p-4 text-center border border-[#E6E2D8] shadow-md">
@@ -269,7 +269,7 @@ export default function HomePage() {
               <div className="text-[11px] font-semibold text-[#646973] uppercase tracking-wider mt-0.5">Total Laporan Warga</div>
             </div>
             <div className="bg-white rounded-2xl p-4 text-center border border-[#E6E2D8] shadow-md">
-              <div className="font-display font-extrabold text-2xl sm:text-3xl text-emerald-700">{completionRate}%</div>
+              <div className="font-display font-extrabold text-2xl sm:text-3xl text-[#EA580C]">{completionRate}%</div>
               <div className="text-[11px] font-semibold text-[#646973] uppercase tracking-wider mt-0.5">Tingkat Penanganan</div>
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#2E3238] pb-6">
             <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-[11px] font-bold text-emerald-300">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-950 border border-orange-800 text-[11px] font-bold text-orange-300">
                 <BarChart3 className="w-3.5 h-3.5" />
                 Alur Kerja &amp; Integritas Data
               </div>
@@ -295,7 +295,7 @@ export default function HomePage() {
                 Dari Laporan Warga Menuju Realisasi Lapangan
               </h2>
               <p className="text-[13px] text-slate-300 leading-relaxed">
-                Setiap aduan diverifikasi dan dipetakan secara spasial menggunakan WebGIS Leaflet dengan tile layer CartoDB Dark Matter, memastikan penanganan objektif dan bebas subjektivitas.
+                Setiap aduan diverifikasi dan dipetakan secara spasial menggunakan WebGIS Leaflet dengan tile layer OpenStreetMap, memastikan penanganan objektif dan bebas subjektivitas.
               </p>
             </div>
 
@@ -305,7 +305,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#24262B] hover:bg-[#343840] text-white text-[12px] font-bold transition-colors border border-[#343840]"
               >
                 <span>Buka WebGIS Lengkap</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-orange-400" />
               </Link>
             </div>
           </div>
@@ -313,14 +313,14 @@ export default function HomePage() {
           {/* 2-Column Bento Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            {/* Left Col: Mini Spatial WebGIS Map (CartoDB Dark Matter) */}
+            {/* Left Col: Mini Spatial WebGIS Map */}
             <div className="lg:col-span-7 bg-[#222429] rounded-3xl p-5 border border-[#2E3238] space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-[13px] font-bold text-slate-200">
-                  <MapPin className="w-4 h-4 text-emerald-400" />
+                  <MapPin className="w-4 h-4 text-orange-400" />
                   <span>Sebaran Titik Kerusakan Aktif</span>
                 </div>
-                <span className="text-[11px] text-slate-400 font-mono">CartoDB Dark Matter</span>
+                <span className="text-[11px] text-slate-400 font-mono">WebGIS Ketintang</span>
               </div>
 
               {/* Mini Map */}
@@ -347,7 +347,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-display font-bold text-lg text-white">Status Penanganan</h3>
-                  <span className="text-[11px] text-emerald-300 bg-emerald-950 px-2.5 py-0.5 rounded-full border border-emerald-800 font-mono">
+                  <span className="text-[11px] text-orange-300 bg-orange-950 px-2.5 py-0.5 rounded-full border border-orange-800 font-mono">
                     Live APBDes
                   </span>
                 </div>
@@ -357,20 +357,20 @@ export default function HomePage() {
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[12px]">
                       <span className="text-slate-300">Selesai Dikerjakan</span>
-                      <span className="font-bold text-emerald-400">{selesaiCount} Tiket ({completionRate}%)</span>
+                      <span className="font-bold text-orange-400">{selesaiCount} Tiket ({completionRate}%)</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#191A1E] overflow-hidden">
-                      <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
+                      <div className="h-full bg-[#EA580C] rounded-full transition-all duration-500" style={{ width: `${completionRate}%` }} />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-[12px]">
                       <span className="text-slate-300">Sedang Ditindak Tim Lapangan</span>
-                      <span className="font-bold text-emerald-400">{prosesCount} Tiket</span>
+                      <span className="font-bold text-orange-400">{prosesCount} Tiket</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-[#191A1E] overflow-hidden">
-                      <div className="h-full bg-emerald-600 rounded-full transition-all duration-500" style={{ width: `${(prosesCount / (totalReports || 1)) * 100}%` }} />
+                      <div className="h-full bg-orange-600 rounded-full transition-all duration-500" style={{ width: `${(prosesCount / (totalReports || 1)) * 100}%` }} />
                     </div>
                   </div>
 
@@ -389,12 +389,12 @@ export default function HomePage() {
               {/* Staff Action Team Banner */}
               <div className="bg-[#FAF8F3] text-[#191A1E] rounded-2xl p-4.5 flex items-center justify-between gap-3 shadow-md">
                 <div className="space-y-0.5">
-                  <div className="text-[13px] font-bold">Tim Reaksi Cepat Desa</div>
-                  <div className="text-[11px] text-slate-600">Verifikasi fisik &amp; penutupan tiket berkas Musrenbangdes</div>
+                  <div className="text-[13px] font-bold">Posko Reaksi Cepat Ketintang</div>
+                  <div className="text-[11px] text-slate-600">Verifikasi fisik lapangan &amp; penanganan aduan warga Ketintang</div>
                 </div>
                 <Link
                   href="/login"
-                  className="px-3.5 py-2 rounded-full bg-[#1B4332] text-white text-[11px] font-bold hover:bg-[#143628] transition-colors shrink-0 flex items-center gap-1"
+                  className="px-3.5 py-2 rounded-full bg-[#EA580C] text-white text-[11px] font-bold hover:bg-[#C2410C] transition-colors shrink-0 flex items-center gap-1"
                 >
                   <span>Portal Staf</span>
                   <ArrowRight className="w-3 h-3" />
@@ -439,12 +439,12 @@ export default function HomePage() {
                 aria-pressed={active}
                 className={`tilt-card text-left p-4 rounded-2xl sm:rounded-3xl border transition-all cursor-pointer ${
                   active
-                    ? 'bg-[#1B4332] text-white border-[#1B4332] shadow-card-hover'
-                    : 'bg-white border-[#E6E2D8] text-[#191A1E] hover:border-emerald-500 hover:shadow-card-soft'
+                    ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-card-hover'
+                    : 'bg-white border-[#E6E2D8] text-[#191A1E] hover:border-orange-500 hover:shadow-card-soft'
                 }`}
               >
                 <div className={`w-9 h-9 rounded-2xl flex items-center justify-center mb-3 ${
-                  active ? 'bg-white/20 text-emerald-300' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  active ? 'bg-white/20 text-orange-200' : 'bg-orange-50 text-orange-800 border border-orange-200'
                 }`}>
                   <Icon className="w-5 h-5" />
                 </div>
@@ -521,11 +521,11 @@ export default function HomePage() {
                   aria-pressed={active}
                   className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold transition-all cursor-pointer ${
                     active
-                      ? 'bg-[#1B4332] text-white shadow-xs'
+                      ? 'bg-[#EA580C] text-white shadow-xs'
                       : 'bg-white border border-[#E6E2D8] text-[#474B53] hover:border-slate-400'
                   }`}
                 >
-                  {label} <span className={active ? 'text-emerald-300' : 'text-[#9E998E]'}>({cnt})</span>
+                  {label} <span className={active ? 'text-orange-200' : 'text-[#9E998E]'}>({cnt})</span>
                 </button>
               );
             })}
@@ -535,10 +535,10 @@ export default function HomePage() {
             <select
               value={selectedDusun}
               onChange={e => setDusun(e.target.value)}
-              aria-label="Filter Dusun"
+              aria-label="Filter Wilayah Ketintang"
               className="px-3.5 py-1.5 rounded-full border border-[#E6E2D8] bg-white text-[12px] font-semibold text-[#191A1E] focus:outline-none cursor-pointer"
             >
-              <option value="Semua">Semua Dusun</option>
+              <option value="Semua">Semua Wilayah Ketintang</option>
               {LIST_DUSUN.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
 
@@ -560,7 +560,7 @@ export default function HomePage() {
         {loading ? (
           <div className="py-24 flex flex-col items-center gap-3">
             <div className="w-8 h-8 rounded-full border-[3px] border-[#16A34A] border-t-transparent animate-spin" />
-            <p className="text-[13px] font-bold text-[#646973]">Memuat laporan penanganan desa…</p>
+            <p className="text-[13px] font-bold text-[#646973]">Memuat laporan fasilitas Ketintang…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-20 flex flex-col items-center gap-4 bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-8 text-center">
@@ -582,7 +582,7 @@ export default function HomePage() {
               </button>
               <Link
                 href="/lapor"
-                className="px-4 py-2 rounded-full bg-[#1B4332] hover:bg-[#143628] text-white text-[12px] font-bold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-[12px] font-bold transition-colors cursor-pointer"
               >
                 + Buat Laporan Baru
               </Link>
@@ -613,8 +613,8 @@ export default function HomePage() {
                         #{item.ticket_code}
                       </span>
                       {item.status === 'Selesai' && (
-                        <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-[#1B4332] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md border border-emerald-700">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /> Selesai
+                        <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-[#EA580C] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md border border-orange-600">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-orange-200" /> Selesai
                         </span>
                       )}
                     </div>
@@ -646,7 +646,7 @@ export default function HomePage() {
 
                     <div className="flex items-center justify-between pt-3 border-t border-[#E6E2D8] text-[12px]">
                       <span className="inline-flex items-center gap-1.5 font-semibold text-[#191A1E]">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+                        <MapPin className="w-3.5 h-3.5 text-[#EA580C]" />
                         {item.dusun}
                       </span>
                       <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${statusCfg.bg} ${statusCfg.border}`}>
@@ -664,11 +664,11 @@ export default function HomePage() {
                         aria-label={`Dukung laporan ini (${totalVotes} dukungan)`}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[12px] font-bold transition-all cursor-pointer ${
                           currentVoted
-                            ? 'bg-[#1B4332] text-white border-[#1B4332] shadow-xs'
-                            : 'bg-white text-[#191A1E] border-[#E6E2D8] hover:border-emerald-500'
+                            ? 'bg-[#EA580C] text-white border-[#EA580C] shadow-xs'
+                            : 'bg-white text-[#191A1E] border-[#E6E2D8] hover:border-orange-500'
                         }`}
                       >
-                        <ThumbsUp className={`w-3.5 h-3.5 ${currentVoted ? 'text-emerald-300' : 'text-slate-500'}`} />
+                        <ThumbsUp className={`w-3.5 h-3.5 ${currentVoted ? 'text-orange-200' : 'text-slate-500'}`} />
                         <span>{totalVotes}</span>
                       </button>
 
@@ -676,7 +676,7 @@ export default function HomePage() {
                       <button
                         onClick={e => handleShare(item, e)}
                         aria-label="Bagikan via WhatsApp"
-                        className="p-2 rounded-full border border-[#E6E2D8] bg-white text-[#646973] hover:text-emerald-700 hover:border-emerald-400 transition-colors cursor-pointer"
+                        className="p-2 rounded-full border border-[#E6E2D8] bg-white text-[#646973] hover:text-[#EA580C] hover:border-orange-400 transition-colors cursor-pointer"
                         title="Bagikan ke WhatsApp"
                       >
                         <Share2 className="w-3.5 h-3.5" />
@@ -685,7 +685,7 @@ export default function HomePage() {
 
                     <Link
                       href={`/lacak/${item.ticket_code}`}
-                      className="inline-flex items-center gap-1 text-[12px] font-bold text-[#191A1E] hover:text-emerald-700 transition-colors group cursor-pointer"
+                      className="inline-flex items-center gap-1 text-[12px] font-bold text-[#191A1E] hover:text-[#EA580C] transition-colors group cursor-pointer"
                     >
                       <span>Progres</span>
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

@@ -65,7 +65,7 @@ export default function BeforeAfterSlider({
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       />
       <div className="absolute bottom-3.5 right-3.5 z-10">
-        <span className="text-[11px] font-bold bg-[#1B4332] text-white px-3 py-1 rounded-full shadow-md border border-[#2D6A4F]">
+        <span className="text-[11px] font-bold bg-[#EA580C] text-white px-3 py-1 rounded-full shadow-md border border-[#C2410C]">
           {afterLabel}
         </span>
       </div>

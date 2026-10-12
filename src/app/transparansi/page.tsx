@@ -80,7 +80,7 @@ export default function TransparencyMapPage() {
   const completionRate = totalReports > 0 ? Math.round((completedReports / totalReports) * 100) : 100;
 
   return (
-    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+    <div id="main-content" className="w-full bg-transparent min-h-screen pb-24 pt-24 sm:pt-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
 
         {/* ── Header ─────────────────────────────────── */}
@@ -95,15 +95,15 @@ export default function TransparencyMapPage() {
 
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="space-y-1 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[11px] font-bold text-orange-800">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Akuntabilitas &amp; Transparansi Publik</span>
               </div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#191A1E] tracking-tight">
-                Peta Transparansi Fasilitas Desa
+                Peta Transparansi Fasilitas Ketintang
               </h1>
               <p className="text-[13px] text-[#646973] leading-relaxed">
-                Pantau sebaran titik penanganan fasilitas desa yang sedang dikerjakan dan telah selesai secara terbuka bagi seluruh warga.
+                Pantau sebaran titik penanganan fasilitas di kawasan Ketintang Surabaya yang sedang dikerjakan dan telah selesai secara terbuka.
               </p>
             </div>
 
@@ -111,11 +111,11 @@ export default function TransparencyMapPage() {
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="bg-[#FAF8F3] border border-[#E6E2D8] p-3.5 rounded-2xl">
                 <span className="text-[10px] uppercase font-bold text-[#646973] block">Selesai</span>
-                <span className="font-display text-xl font-bold text-emerald-800">{completedReports}</span>
+                <span className="font-display text-xl font-bold text-orange-800">{completedReports}</span>
               </div>
-              <div className="bg-emerald-100 border border-emerald-300 p-3.5 rounded-2xl">
-                <span className="text-[10px] uppercase font-bold text-emerald-900 block">Ditindak</span>
-                <span className="font-display text-xl font-bold text-emerald-900">{inProgressReports}</span>
+              <div className="bg-amber-100 border border-amber-300 p-3.5 rounded-2xl">
+                <span className="text-[10px] uppercase font-bold text-amber-950 block">Ditindak</span>
+                <span className="font-display text-xl font-bold text-amber-950">{inProgressReports}</span>
               </div>
               <div className="bg-[#FAF8F3] border border-[#E6E2D8] p-3.5 rounded-2xl">
                 <span className="text-[10px] uppercase font-bold text-[#646973] block">Tuntas</span>
@@ -133,7 +133,7 @@ export default function TransparencyMapPage() {
               onChange={(e) => setFilterDusun(e.target.value)}
               className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
-              <option value="Semua">Semua Dusun</option>
+              <option value="Semua">Semua Wilayah Ketintang</option>
               {LIST_DUSUN.map((d) => (
                 <option key={d} value={d}>
                   {d}
@@ -205,8 +205,8 @@ export default function TransparencyMapPage() {
                     onClick={() => setSelectedReportId(item.id)}
                     className={`p-4 rounded-2xl border text-xs cursor-pointer transition-all ${
                       selectedReportId === item.id
-                        ? 'border-[#1B4332] bg-[#FAF8F3] shadow-sm'
-                        : 'border-[#E6E2D8] hover:border-emerald-500 hover:bg-[#FAF8F3]'
+                        ? 'border-[#EA580C] bg-[#FAF8F3] shadow-sm'
+                        : 'border-[#E6E2D8] hover:border-orange-500 hover:bg-[#FAF8F3]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -216,8 +216,8 @@ export default function TransparencyMapPage() {
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           item.status === 'Selesai'
-                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                            : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            ? 'bg-orange-50 text-orange-900 border border-orange-200'
+                            : 'bg-amber-100 text-amber-950 border border-amber-300'
                         }`}
                       >
                         {item.status}
@@ -231,7 +231,7 @@ export default function TransparencyMapPage() {
                       <span className="font-bold text-[#191A1E]">{item.dusun}</span>
                       <Link
                         href={`/lacak/${item.ticket_code}`}
-                        className="text-emerald-800 font-bold hover:underline inline-flex items-center gap-0.5"
+                        className="text-orange-700 font-bold hover:underline inline-flex items-center gap-0.5"
                       >
                         Detail <ChevronRight className="w-3.5 h-3.5" />
                       </Link>

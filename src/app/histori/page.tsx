@@ -32,7 +32,7 @@ export default function HistoriPage() {
   const handleShare = (item: Aduan) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const text = encodeURIComponent(
-      `*[SIGAP Desa] Fasilitas Tuntas Diperbaiki*\n\n` +
+      `*[SIGAP - Ketintang] Fasilitas Tuntas Diperbaiki*\n\n` +
       `✅ ${item.kategori} – ${item.dusun}\n` +
       `📝 ${item.catatan_admin || 'Perbaikan telah selesai terverifikasi'}\n` +
       `🔗 ${origin}/lacak/${item.ticket_code}`
@@ -41,7 +41,7 @@ export default function HistoriPage() {
   };
 
   return (
-    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+    <div id="main-content" className="w-full bg-transparent min-h-screen pb-24 pt-24 sm:pt-28">
 
       {/* ── Page Header ───────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
@@ -54,7 +54,7 @@ export default function HistoriPage() {
 
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[11px] font-bold text-orange-800">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Dokumentasi Fisik Terbuka</span>
             </div>
@@ -62,7 +62,7 @@ export default function HistoriPage() {
               Histori Penyelesaian &amp; Bukti Fisik
             </h1>
             <p className="text-[13px] text-[#646973] leading-relaxed">
-              Rekam jejak transparan seluruh fasilitas publik desa yang telah tuntas diperbaiki beserta komparator foto sebelum dan sesudah pengerjaan.
+              Rekam jejak transparan seluruh fasilitas publik kawasan Ketintang Surabaya yang telah tuntas diperbaiki beserta komparator foto sebelum dan sesudah pengerjaan.
             </p>
           </div>
 
@@ -70,13 +70,13 @@ export default function HistoriPage() {
           <div className="flex items-center gap-3">
             <div className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-2xl p-4 text-center min-w-[120px]">
               <p className="text-[10px] font-bold uppercase text-[#646973] tracking-wide">Total Tuntas</p>
-              <p className="font-display text-2xl font-bold text-emerald-800">{reports.length}</p>
+              <p className="font-display text-2xl font-bold text-orange-800">{reports.length}</p>
               <p className="text-[11px] text-[#646973]">Fasilitas</p>
             </div>
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center min-w-[120px]">
-              <p className="text-[10px] font-bold uppercase text-emerald-800 tracking-wide">Terverifikasi</p>
-              <p className="font-display text-2xl font-bold text-emerald-800">100%</p>
-              <p className="text-[11px] text-emerald-700">Foto Fisik</p>
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 text-center min-w-[120px]">
+              <p className="text-[10px] font-bold uppercase text-orange-800 tracking-wide">Terverifikasi</p>
+              <p className="font-display text-2xl font-bold text-orange-800">100%</p>
+              <p className="text-[11px] text-orange-700">Foto Fisik</p>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function HistoriPage() {
               onChange={e => setFilterDusun(e.target.value)}
               className="px-4 py-2 rounded-full border border-[#E6E2D8] text-[12px] font-bold text-[#191A1E] bg-[#FAF8F3] focus:outline-none cursor-pointer"
             >
-              <option value="Semua">Semua Dusun</option>
+              <option value="Semua">Semua Wilayah Ketintang</option>
               {LIST_DUSUN.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
 
@@ -118,13 +118,13 @@ export default function HistoriPage() {
         {/* ── Cards Grid ───────────────────────────── */}
         {loading ? (
           <div className="py-24 flex flex-col items-center gap-3">
-            <div className="w-8 h-8 rounded-full border-[3px] border-emerald-600 border-t-transparent animate-spin" />
+            <div className="w-8 h-8 rounded-full border-[3px] border-orange-600 border-t-transparent animate-spin" />
             <p className="text-[13px] font-bold text-[#646973]">Memuat histori penyelesaian…</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-20 bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft text-center p-8 space-y-2">
             <p className="font-display font-bold text-base text-[#191A1E]">Belum ada data penyelesaian pada pilihan filter ini.</p>
-            <Link href="/" className="inline-block text-[13px] font-bold text-emerald-700 hover:underline cursor-pointer">
+            <Link href="/" className="inline-block text-[13px] font-bold text-orange-700 hover:underline cursor-pointer">
               Lihat Laporan Aktif Lainnya
             </Link>
           </div>
@@ -142,8 +142,8 @@ export default function HistoriPage() {
                     <h3 className="font-display font-bold text-[16px] text-[#191A1E] mt-1.5">{item.kategori}</h3>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Selesai
+                    <span className="inline-flex items-center gap-1 bg-orange-50 border border-orange-200 text-orange-800 text-[11px] font-bold px-3 py-1 rounded-full">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-orange-600" /> Selesai
                     </span>
                     <p className="text-[11px] text-[#646973] mt-1">{new Date(item.created_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}</p>
                   </div>
@@ -155,7 +155,7 @@ export default function HistoriPage() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-[11px] font-bold text-[#646973]">
                         <span>Geser untuk perbandingan sebelum &amp; sesudah:</span>
-                        <span className="text-emerald-800 flex items-center gap-1"><Sliders className="w-3 h-3" /> Interaktif</span>
+                        <span className="text-orange-800 flex items-center gap-1"><Sliders className="w-3 h-3" /> Interaktif</span>
                       </div>
                       <BeforeAfterSlider
                         beforeImage={item.foto_url}
@@ -176,9 +176,9 @@ export default function HistoriPage() {
                   <div className="space-y-3 text-[13px]">
                     <p className="text-[#646973] leading-relaxed">{item.deskripsi}</p>
                     {item.catatan_admin && (
-                      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
-                        <p className="text-[11px] font-bold text-emerald-900 mb-0.5">Catatan Tindakan Staf Desa:</p>
-                        <p className="text-emerald-950 leading-relaxed text-[13px]">{item.catatan_admin}</p>
+                      <div className="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
+                        <p className="text-[11px] font-bold text-orange-900 mb-0.5">Catatan Tindakan Staf Desa:</p>
+                        <p className="text-orange-950 leading-relaxed text-[13px]">{item.catatan_admin}</p>
                       </div>
                     )}
                   </div>
@@ -187,18 +187,18 @@ export default function HistoriPage() {
                 {/* Footer Actions */}
                 <div className="px-6 py-3.5 border-t border-[#E6E2D8] bg-[#FAF8F3] flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#191A1E]">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-700" /> {item.dusun}
+                    <MapPin className="w-3.5 h-3.5 text-orange-700" /> {item.dusun}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleShare(item)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E6E2D8] bg-white text-[12px] font-bold text-[#191A1E] hover:border-emerald-500 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E6E2D8] bg-white text-[12px] font-bold text-[#191A1E] hover:border-orange-500 transition-all cursor-pointer"
                     >
-                      <Share2 className="w-3.5 h-3.5 text-emerald-600" /> Bagikan
+                      <Share2 className="w-3.5 h-3.5 text-orange-600" /> Bagikan
                     </button>
                     <Link
                       href={`/lacak/${item.ticket_code}`}
-                      className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#1B4332] hover:bg-[#143628] text-white text-[12px] font-bold transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#EA580C] hover:bg-[#C2410C] text-white text-[12px] font-bold transition-colors cursor-pointer"
                     >
                       <span>Linimasa</span>
                       <ChevronRight className="w-3.5 h-3.5" />

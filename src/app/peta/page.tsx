@@ -26,7 +26,7 @@ const MapViewer = nextDynamic(() => import('@/components/MapViewer'), {
   ssr: false,
   loading: () => (
     <div className="h-[600px] w-full rounded-3xl bg-[#FAF8F3] border border-[#E6E2D8] flex items-center justify-center text-[#646973] text-xs font-bold">
-      Memuat WebGIS Desa…
+      Memuat WebGIS Ketintang Surabaya…
     </div>
   ),
 });
@@ -78,7 +78,7 @@ export default function PetaPage() {
   const urgent = reports.filter((r) => r.prioritas === 'Tinggi' && r.status !== 'Selesai').length;
 
   return (
-    <div id="main-content" className="w-full bg-[#FAF8F3] min-h-screen pb-24 pt-24 sm:pt-28">
+    <div id="main-content" className="w-full bg-transparent min-h-screen pb-24 pt-24 sm:pt-28">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
 
         {/* ── Header & Metric Counters ─────────────────── */}
@@ -93,15 +93,15 @@ export default function PetaPage() {
 
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E6E2D8] shadow-card-soft flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="space-y-1 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-800">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[11px] font-bold text-orange-800">
                 <MapPin className="w-3.5 h-3.5" />
-                <span>Geospasial WebGIS Desa</span>
+                <span>Geospasial WebGIS Ketintang Surabaya</span>
               </div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-[#191A1E] tracking-tight">
-                Peta Sebaran Titik Fasilitas Desa
+                Peta Sebaran Fasilitas Ketintang Surabaya
               </h1>
               <p className="text-[13px] text-[#646973] leading-relaxed">
-                Visualisasi spasial seluruh aduan kerusakan infrastruktur di wilayah 15 dusun untuk efisiensi survei dan penanganan.
+                Visualisasi spasial seluruh aduan kerusakan infrastruktur di kawasan Ketintang, Gayungan, Surabaya untuk efisiensi survei dan penanganan.
               </p>
             </div>
 
@@ -115,13 +115,13 @@ export default function PetaPage() {
                 <span className="text-red-700 text-[10px] uppercase font-bold block">Prioritas Tinggi</span>
                 <span className="font-display text-xl font-bold text-red-700">{urgent}</span>
               </div>
-              <div className="bg-emerald-100 border border-emerald-300 p-3 rounded-2xl text-center">
-                <span className="text-emerald-900 text-[10px] uppercase font-bold block">Ditindak</span>
-                <span className="font-display text-xl font-bold text-emerald-900">{proses}</span>
+              <div className="bg-amber-100 border border-amber-300 p-3 rounded-2xl text-center">
+                <span className="text-amber-950 text-[10px] uppercase font-bold block">Ditindak</span>
+                <span className="font-display text-xl font-bold text-amber-950">{proses}</span>
               </div>
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-center">
-                <span className="text-emerald-800 text-[10px] uppercase font-bold block">Selesai</span>
-                <span className="font-display text-xl font-bold text-emerald-800">{selesai}</span>
+              <div className="bg-orange-50 border border-orange-200 p-3 rounded-2xl text-center">
+                <span className="text-orange-800 text-[10px] uppercase font-bold block">Selesai</span>
+                <span className="font-display text-xl font-bold text-orange-800">{selesai}</span>
               </div>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function PetaPage() {
               onChange={(e) => setFilterDusun(e.target.value)}
               className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
-              <option value="Semua">Semua Dusun</option>
+              <option value="Semua">Semua Wilayah Ketintang</option>
               {LIST_DUSUN.map((d) => (
                 <option key={d} value={d}>
                   {d}
@@ -178,11 +178,11 @@ export default function PetaPage() {
               <span>Prioritas Tinggi</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
               <span>Sedang Ditindak</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#1B4332]"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#EA580C]"></span>
               <span>Selesai</span>
             </span>
           </div>
@@ -222,8 +222,8 @@ export default function PetaPage() {
                     onClick={() => setSelectedReportId(item.id)}
                     className={`p-4 rounded-2xl border text-xs cursor-pointer transition-all ${
                       selectedReportId === item.id
-                        ? 'border-[#1B4332] bg-[#FAF8F3] shadow-sm'
-                        : 'border-[#E6E2D8] hover:border-emerald-500 hover:bg-[#FAF8F3]'
+                        ? 'border-[#EA580C] bg-[#FAF8F3] shadow-sm'
+                        : 'border-[#E6E2D8] hover:border-orange-500 hover:bg-[#FAF8F3]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1 mb-1.5">
@@ -233,9 +233,9 @@ export default function PetaPage() {
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           item.status === 'Selesai'
-                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            ? 'bg-orange-50 text-orange-900 border border-orange-200'
                             : item.status === 'Sedang Ditindak'
-                            ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                            ? 'bg-amber-100 text-amber-950 border border-amber-300'
                             : 'bg-stone-100 text-stone-700 border border-stone-200'
                         }`}
                       >
@@ -252,7 +252,7 @@ export default function PetaPage() {
                       <span className="font-bold text-[#191A1E]">{item.dusun}</span>
                       <Link
                         href={`/lacak/${item.ticket_code}`}
-                        className="text-emerald-800 font-bold hover:underline inline-flex items-center gap-0.5"
+                        className="text-orange-700 font-bold hover:underline inline-flex items-center gap-0.5"
                       >
                         Detail <ChevronRight className="w-3.5 h-3.5" />
                       </Link>

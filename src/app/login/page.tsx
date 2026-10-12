@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   const handleDemoLogin = () => {
     localStorage.setItem('sigap_demo_admin', 'true');
-    showToast('Masuk sebagai Staf Desa (Mode Demo Presentasi)', 'info');
+    showToast('Masuk sebagai Staf SIGAP - Ketintang (Mode Demo)', 'info');
     router.push('/dashboard');
   };
 
@@ -62,10 +62,10 @@ export default function LoginPage() {
               <ShieldCheck className="w-7 h-7" />
             </div>
             <h1 className="font-display font-bold text-2xl text-[#191A1E] tracking-tight">
-              Command Center Desa
+              Command Center SIGAP - Ketintang
             </h1>
             <p className="text-[13px] text-[#646973] leading-relaxed">
-              Autentikasi staf &amp; perangkat desa untuk verifikasi pengaduan dan ekspor Musrenbangdes.
+              Autentikasi staf posko wilayah Ketintang, Gayungan, Surabaya untuk verifikasi dan tindak lanjut laporan.
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             <div>
               <label className="block text-[12px] font-bold text-[#191A1E] mb-1.5">
-                Email Staf Desa
+                Email Petugas Posko Ketintang
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-[#9E998E] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -87,7 +87,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@desa.go.id"
+                  placeholder="petugas@ketintang.surabaya.go.id"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E]"
                 />
               </div>

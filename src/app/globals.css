@@ -5,12 +5,13 @@
 @tailwind utilities;
 
 /* ============================================
-   SIGAP DESA — Modern Editorial Civic Design
-   Forest & Ricefield Theme (Hijau Hutan & Sawah)
+   SIGAP - KETINTANG — Modern Editorial Civic Design
+   Warm Orange & Charcoal Theme (Oranye & Arang Hangat)
    Canvas:   #FAF8F3 (Warm Organic Ivory)
    Charcoal: #191A1E (Deep Matte Onyx)
-   Forest:   #1B4332 (Deep Pine Forest Green)
-   Ricefield: #16A34A / #22C55E (Fresh Ricefield Green)
+   Primary:  #EA580C (Vibrant Tangerine Orange)
+   Accent:   #C2410C (Deep Terracotta Orange)
+   Soft:     #FFF7ED (Soft Warm Orange Surface)
    ============================================ */
 
 :root {
@@ -18,8 +19,8 @@
   --color-on-primary:      #FAF8F3;
   --color-secondary:       #474B53;
   --color-on-secondary:    #FFFFFF;
-  --color-accent:          #16A34A;
-  --color-accent-hover:    #15803D;
+  --color-accent:          #EA580C;
+  --color-accent-hover:    #C2410C;
   --color-on-accent:       #FFFFFF;
   --color-background:      #FAF8F3;
   --color-foreground:      #191A1E;
@@ -30,15 +31,15 @@
   --color-border:          #E6E2D8;
   --color-border-hover:    #D5CFC2;
   --color-destructive:     #DC2626;
-  --color-ring:            #1B4332;
+  --color-ring:            #EA580C;
 
   /* Semantic Status Colors */
-  --color-success:         #16A34A;
-  --color-success-bg:      #F0FDF4;
-  --color-success-border:  #BBF7D0;
-  --color-warning:         #15803D;
-  --color-warning-bg:      #F0FDF4;
-  --color-warning-border:  #86EFAC;
+  --color-success:         #EA580C;
+  --color-success-bg:      #FFF7ED;
+  --color-success-border:  #FED7AA;
+  --color-warning:         #D97706;
+  --color-warning-bg:      #FFFBEB;
+  --color-warning-border:  #FDE68A;
   --color-info:            #0284C7;
   --color-info-bg:         #F0F9FF;
   --color-info-border:     #BAE6FD;
@@ -55,6 +56,10 @@
 html {
   scroll-behavior: smooth;
   background-color: #FAF8F3;
+}
+
+#main-content {
+  background-color: transparent !important;
 }
 
 body {
@@ -75,7 +80,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
 
 /* ── Accessible Focus Ring ───────────────────────────── */
 *:focus-visible {
-  outline: 2px solid var(--color-primary) !important;
+  outline: 2px solid var(--color-accent) !important;
   outline-offset: 2px !important;
   border-radius: 6px;
 }
@@ -136,7 +141,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
   left: 20%;
   right: 20%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #22C55E, transparent);
+  background: linear-gradient(90deg, transparent, #EA580C, transparent);
   pointer-events: none;
 }
 
@@ -198,7 +203,12 @@ h1, h2, h3, h4, h5, h6, .font-display {
   line-height: 1.5 !important;
 }
 
-/* ── Solid Pill (No Transparency) ────────────────────── */
+/* ── Leaflet Dark Tile Filter ────────────────────────── */
+.leaflet-tile-dark {
+  filter: brightness(0.7) invert(1) contrast(1.8) hue-rotate(200deg) saturate(0.35) !important;
+}
+
+/* ── Solid Pill ──────────────────────────────────────── */
 .glass-pill {
   background: #FFFFFF;
   border: 1px solid #E6E2D8;

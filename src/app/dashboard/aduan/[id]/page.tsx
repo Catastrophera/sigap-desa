@@ -217,7 +217,7 @@ export default function AdminAduanDetailPage() {
                   <span className="font-bold text-[#191A1E] text-sm">{report.kategori}</span>
                 </div>
                 <div className="bg-[#FAF8F3] p-3.5 rounded-2xl border border-[#E6E2D8]">
-                  <span className="text-[#646973] block mb-0.5 text-[11px]">Wilayah Dusun:</span>
+                  <span className="text-[#646973] block mb-0.5 text-[11px]">Wilayah Ketintang:</span>
                   <span className="font-bold text-[#191A1E] text-sm">{report.dusun}</span>
                 </div>
               </div>

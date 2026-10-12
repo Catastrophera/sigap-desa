@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CivicBackground from '@/components/CivicBackground';
 import { ToastProvider } from '@/components/Toast';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -20,8 +21,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'SIGAP Desa - Platform Layanan & Penanganan Fasilitas Desa',
-  description: 'Portal pengaduan infrastruktur dan fasilitas publik desa berbasis Machine Learning & WebGIS untuk penanganan cepat, transparan, dan terukur.',
+  title: 'SIGAP - Ketintang | Layanan & Penanganan Fasilitas Publik Ketintang Surabaya',
+  description: 'Portal pengaduan infrastruktur dan fasilitas publik wilayah Ketintang Surabaya berbasis Machine Learning, Geotagging & WebGIS terpadu.',
 };
 
 export default function RootLayout({
@@ -31,10 +32,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={`scroll-smooth ${plusJakartaSans.variable} ${outfit.variable}`}>
-      <body className="min-h-screen flex flex-col bg-[#FAF8F3] text-[#191A1E] font-sans antialiased selection:bg-emerald-100 selection:text-emerald-950">
+      <body className="min-h-screen flex flex-col bg-[#FAF8F3] text-[#191A1E] font-sans antialiased selection:bg-orange-100 selection:text-orange-950 relative">
+        <CivicBackground />
         <ToastProvider>
           <Navbar />
-          <main className="flex-grow">{children}</main>
+          <main className="flex-grow relative z-10">{children}</main>
           <Footer />
         </ToastProvider>
       </body>

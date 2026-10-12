@@ -4,7 +4,7 @@ import { classifyReport } from '@/lib/classifier';
 import { LIST_KATEGORI } from '@/lib/supabase';
 
 const SYSTEM_PROMPT = `
-Kamu adalah sistem AI klasifikasi pengaduan infrastruktur desa SIGAP Desa.
+Kamu adalah sistem AI klasifikasi pengaduan infrastruktur wilayah Ketintang Surabaya sistem SIGAP - Ketintang.
 Tugasmu adalah menganalisis teks laporan warga dan mengekstrak kategori serta prioritas penanganan dalam format JSON murni.
 
 Kategori yang valid (PILIH SALAH SATU):
@@ -60,8 +60,8 @@ export async function POST(req: Request) {
 
     const apiKey = process.env.GROQ_API_KEY;
 
-    // 1. LAYER 1: If Groq API Key is configured, try Groq Cloud LLM
-    if (apiKey && apiKey.trim().length > 5) {
+    // 1. LAYER 1: If Groq API Key is configured and valid, try Groq Cloud LLM
+    if (apiKey && apiKey.trim().length > 15 && !apiKey.includes('xxxx') && !apiKey.includes('your_')) {
       try {
         const groq = new Groq({ apiKey });
 
@@ -90,23 +90,23 @@ export async function POST(req: Request) {
             kategori: finalKategori,
             prioritas: finalPrioritas,
             confidence: parsed.confidence || 98,
-            alasan: parsed.alasan || 'Dianalisis oleh AI LLM (Groq Cloud)',
+            alasan: parsed.alasan || 'Dianalisis oleh AI SIGAP - Ketintang',
             source: 'groq-llm',
           });
         }
-      } catch (groqErr: any) {
-        console.warn('Groq LLM API failed/rate-limited, falling back to Local Model:', groqErr.message);
+      } catch {
+        // Silently fallback to local model without error
       }
     }
 
-    // 2. LAYER 2: Fallback to Local Machine Learning (TF-IDF + Linear Classifier)
+    // 2. LAYER 2: Model AI Machine Learning Lokal (100% Mandiri tanpa API key)
     const localResult = classifyReport(bodyText);
 
     return NextResponse.json({
       kategori: localResult.kategori,
       prioritas: localResult.prioritas,
       confidence: localResult.confidenceKategori || 85,
-      alasan: 'Dianalisis oleh Model AI Lokal (TF-IDF)',
+      alasan: 'Dianalisis oleh Model AI SIGAP - Ketintang (Instan)',
       source: 'local-model',
     });
   } catch (err: any) {

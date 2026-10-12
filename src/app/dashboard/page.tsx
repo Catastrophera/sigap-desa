@@ -222,11 +222,11 @@ export default function DashboardPage() {
 
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('PEMERINTAH DESA - SISTEM SIGAP DESA', 14, 18);
+      doc.text('KELURAHAN KETINTANG - SISTEM SIGAP - KETINTANG SURABAYA', 14, 18);
       doc.setFontSize(9.5);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(70);
-      doc.text('REKAPITULASI PRIORITAS USULAN KERUSAKAN FASILITAS DESA (BAHAN MUSRENBANGDES)', 14, 24);
+      doc.text('REKAPITULASI PRIORITAS USULAN FASILITAS PUBLIK KETINTANG SURABAYA', 14, 24);
       doc.text(`Tanggal Rekapitulasi: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}`, 14, 30);
 
       doc.setDrawColor(217, 119, 6);
@@ -249,7 +249,7 @@ export default function DashboardPage() {
 
       autoTable(doc, {
         startY: 53,
-        head: [['No', 'Kode Tiket', 'Dusun', 'Kategori', 'Prioritas', 'Status', 'Deskripsi Kerusakan', 'Tanggal']],
+        head: [['No', 'Kode Tiket', 'Wilayah RW', 'Kategori', 'Prioritas', 'Status', 'Deskripsi Kerusakan', 'Tanggal']],
         body: tableData,
         headStyles: {
           fillColor: [25, 26, 30],
@@ -278,12 +278,12 @@ export default function DashboardPage() {
         doc.setFontSize(8);
         doc.setTextColor(40);
         doc.text('Mengetahui / Mengesahkan,', 140, finalY);
-        doc.text('Kepala Desa / Ketua BPD', 140, finalY + 5);
+        doc.text('Lurah Ketintang / Tim Satgas', 140, finalY + 5);
         doc.text('(................................................)', 140, finalY + 25);
       }
 
-      doc.save(`SIGAP-DESA_Musrenbangdes_${new Date().toISOString().split('T')[0]}.pdf`);
-      showToast('Berkas PDF Musrenbangdes berhasil diunduh.', 'success');
+      doc.save(`SIGAP-KETINTANG_Rekap-Fasilitas_${new Date().toISOString().split('T')[0]}.pdf`);
+      showToast('Berkas PDF Rekap Fasilitas Ketintang berhasil diunduh.', 'success');
     } catch (e: any) {
       showToast('Gagal mencetak PDF: ' + e.message, 'error');
     }
@@ -312,7 +312,7 @@ export default function DashboardPage() {
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `SIGAP-DESA_Data-Aduan_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `SIGAP-KETINTANG_Data-Aduan_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -335,13 +335,13 @@ export default function DashboardPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-display font-bold text-base tracking-tight text-[#FAF8F3]">COMMAND CENTER DESA</span>
+                  <span className="font-display font-bold text-base tracking-tight text-[#FAF8F3]">COMMAND CENTER SIGAP - KETINTANG</span>
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                    Staf Teknis
+                    Posko Wilayah
                   </span>
                 </div>
                 <span className="text-[11px] text-[#9E998E] hidden sm:block">
-                  Pengendalian Fasilitas Publik &amp; Usulan Musrenbangdes
+                  Pengendalian Fasilitas Publik Kawasan Ketintang, Gayungan, Surabaya
                 </span>
               </div>
             </div>
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1B4332] hover:bg-[#143628] text-white rounded-full text-xs font-bold transition-all shadow-sm cursor-pointer min-h-[38px]"
               >
                 <Download className="w-4 h-4 text-emerald-300" />
-                <span className="hidden sm:inline">Cetak Musrenbangdes</span>
+                <span className="hidden sm:inline">Cetak Rekap PDF</span>
                 <span className="sm:hidden">PDF</span>
               </button>
 
@@ -411,7 +411,7 @@ export default function DashboardPage() {
               }`}
             >
               <BarChart3 className="w-4 h-4" />
-              <span>Analitik &amp; Beban Dusun</span>
+              <span>Analitik &amp; Beban Wilayah</span>
             </button>
 
             <button

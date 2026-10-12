@@ -31,7 +31,7 @@ export interface Aduan {
   longitude: number;
   kategori: KategoriAduan;
   prioritas: 'Tinggi' | 'Sedang' | 'Rendah';
-  status: 'Menunggu Verifikasi' | 'Sedang Ditindak' | 'Selesai';
+  status: 'Menunggu Verifikasi' | 'Sedang Ditindak' | 'Selesai' | 'Ditolak (Spam / Tidak Valid)' | string;
   catatan_admin?: string | null;
   created_at: string;
 }

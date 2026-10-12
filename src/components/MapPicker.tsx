@@ -128,7 +128,7 @@ export default function MapPicker({
   onWilayahSuggest,
 }: MapPickerProps) {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState(address || 'Kelurahan Ketintang, Surabaya');
+  const [currentAddress, setCurrentAddress] = useState(address || 'Jl. Ketintang Baru');
 
   // Reverse geocode whenever coords change
   const updateAddress = useCallback(async (lat: number, lng: number) => {

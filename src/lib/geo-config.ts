@@ -1,32 +1,32 @@
 export const KETINTANG_CENTER_COORDINATES = {
   latitude: -7.3115,
   longitude: 112.7275,
-  name: 'Kantor Kelurahan Ketintang, Surabaya'
+  name: 'Jl. Ketintang Baru'
 };
 
 // Backward compatibility alias
 export const VILLAGE_CENTER_COORDINATES = KETINTANG_CENTER_COORDINATES;
 
 export const LIST_DUSUN = [
-  'RW 01 - Ketintang Baru',
-  'RW 02 - Ketintang Madya',
-  'RW 03 - Ketintang Barat',
-  'RW 04 - Ketintang Timur',
-  'RW 05 - Ketintang Wiyata (UNESA)',
-  'RW 06 - Ketintang Permai',
-  'RW 07 - Ketintang Selatan / Gayungan'
+  'Jl. Ketintang Baru',
+  'Jl. Ketintang Madya',
+  'Jl. Ketintang Barat',
+  'Jl. Ketintang Timur',
+  'Jl. Ketintang Wiyata (UNESA)',
+  'Jl. Ketintang Permai',
+  'Jl. Ketintang Selatan'
 ];
 
 export const LIST_WILAYAH_KETINTANG = LIST_DUSUN;
 
 export const KETINTANG_LANDMARKS = [
-  { name: 'Kantor Kelurahan Ketintang', lat: -7.3115, lng: 112.7275, wilayah: 'RW 01 - Ketintang Baru' },
-  { name: 'Kawasan Kampus UNESA Ketintang', lat: -7.3090, lng: 112.7240, wilayah: 'RW 05 - Ketintang Wiyata (UNESA)' },
-  { name: 'Jl. Ketintang Madya (Arah A. Yani)', lat: -7.3142, lng: 112.7290, wilayah: 'RW 02 - Ketintang Madya' },
-  { name: 'Jl. Ketintang Baru / Dekat Rel', lat: -7.3105, lng: 112.7285, wilayah: 'RW 01 - Ketintang Baru' },
-  { name: 'Kompleks Ketintang Permai', lat: -7.3130, lng: 112.7210, wilayah: 'RW 06 - Ketintang Permai' },
-  { name: 'Kawasan Ketintang Barat', lat: -7.3160, lng: 112.7230, wilayah: 'RW 03 - Ketintang Barat' },
-  { name: 'Jl. Ketintang Selatan', lat: -7.3180, lng: 112.7265, wilayah: 'RW 07 - Ketintang Selatan / Gayungan' },
+  { name: 'Jl. Ketintang Baru', lat: -7.3115, lng: 112.7275, wilayah: 'Jl. Ketintang Baru' },
+  { name: 'Jl. Ketintang Wiyata (UNESA)', lat: -7.3090, lng: 112.7240, wilayah: 'Jl. Ketintang Wiyata' },
+  { name: 'Jl. Ketintang Madya', lat: -7.3142, lng: 112.7290, wilayah: 'Jl. Ketintang Madya' },
+  { name: 'Jl. Ketintang Baru (Perlintasan Rel)', lat: -7.3105, lng: 112.7285, wilayah: 'Jl. Ketintang Baru' },
+  { name: 'Jl. Ketintang Permai', lat: -7.3130, lng: 112.7210, wilayah: 'Jl. Ketintang Permai' },
+  { name: 'Jl. Ketintang Barat', lat: -7.3160, lng: 112.7230, wilayah: 'Jl. Ketintang Barat' },
+  { name: 'Jl. Ketintang Selatan', lat: -7.3180, lng: 112.7265, wilayah: 'Jl. Ketintang Selatan' },
 ];
 
 /**
@@ -120,7 +120,6 @@ export async function extractGeotagFromPhoto(file: File): Promise<{
  * Reverse geocode coordinates to human-readable address in Ketintang Surabaya
  */
 export async function reverseGeocodeKetintang(lat: number, lng: number): Promise<string> {
-  // If close to a landmark, start with landmark as baseline
   const closest = findClosestKetintangLandmark(lat, lng);
   const geocodeApiKey = process.env.NEXT_PUBLIC_GEOCODE_MAPS_KEY || '6accd17a28a42786009662zgkd88b7c';
 
@@ -131,15 +130,18 @@ export async function reverseGeocodeKetintang(lat: number, lng: number): Promise
     );
     if (res.ok) {
       const data = await res.json();
-      if (data && (data.address || data.display_name)) {
-        const parts = [
-          data.address?.amenity || data.address?.road || data.address?.suburb || data.address?.neighbourhood,
-          data.address?.neighbourhood && data.address?.road ? data.address.neighbourhood : null,
-          data.address?.village || data.address?.city_district || 'Ketintang',
-          'Surabaya'
-        ].filter(Boolean);
-        if (parts.length > 0) return parts.join(', ');
-        return data.display_name.split(',').slice(0, 3).join(',');
+      if (data && data.address) {
+        const road = data.address.road || data.address.pedestrian || data.address.residential;
+        if (road) {
+          const houseNo = data.address.house_number ? ` No. ${data.address.house_number}` : '';
+          return `${road}${houseNo}`;
+        }
+        if (data.address.amenity) {
+          return `${data.address.amenity}`;
+        }
+        if (data.address.neighbourhood || data.address.suburb) {
+          return `Jl. ${data.address.neighbourhood || data.address.suburb}`;
+        }
       }
     }
   } catch {
@@ -158,19 +160,23 @@ export async function reverseGeocodeKetintang(lat: number, lng: number): Promise
     );
     if (res.ok) {
       const data = await res.json();
-      if (data && data.display_name) {
-        const parts = [
-          data.address?.road || data.address?.suburb || data.address?.neighbourhood,
-          data.address?.village || data.address?.city_district || 'Ketintang',
-          'Surabaya'
-        ].filter(Boolean);
-        if (parts.length > 0) return parts.join(', ');
-        return data.display_name.split(',').slice(0, 3).join(',');
+      if (data && data.address) {
+        const road = data.address.road || data.address.pedestrian || data.address.residential;
+        if (road) {
+          const houseNo = data.address.house_number ? ` No. ${data.address.house_number}` : '';
+          return `${road}${houseNo}`;
+        }
+        if (data.address.amenity) {
+          return `${data.address.amenity}`;
+        }
+        if (data.address.neighbourhood || data.address.suburb) {
+          return `Jl. ${data.address.neighbourhood || data.address.suburb}`;
+        }
       }
     }
   } catch {
     // Fallback to landmark
   }
 
-  return `${closest.name}, Ketintang, Surabaya`;
+  return closest.name;
 }

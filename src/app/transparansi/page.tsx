@@ -18,7 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
-import { getAllAduan } from '@/lib/aduan-service';
+import { getAllAduan, subscribeToAduanUpdates } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import nextDynamic from 'next/dynamic';
 
@@ -41,20 +41,26 @@ export default function TransparencyMapPage() {
   const [filterStatus, setFilterStatus] = useState<string>('Semua');
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchPublicReports() {
-      setLoading(true);
-      try {
-        const all = await getAllAduan();
-        setReports(all.filter((r) => ['Sedang Ditindak', 'Selesai'].includes(r.status)));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
+  const streetList = useMemo(() => {
+    const streets = Array.from(new Set(reports.map((r) => r.dusun).filter(Boolean)));
+    return streets.length > 0 ? streets : LIST_DUSUN;
+  }, [reports]);
 
+  const fetchPublicReports = async () => {
+    try {
+      const all = await getAllAduan();
+      setReports(all.filter((r) => ['Sedang Ditindak', 'Selesai'].includes(r.status)));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchPublicReports();
+    const unsub = subscribeToAduanUpdates(fetchPublicReports);
+    return () => unsub();
   }, []);
 
   const filteredReports = useMemo(() => {
@@ -125,8 +131,8 @@ export default function TransparencyMapPage() {
               onChange={(e) => setFilterDusun(e.target.value)}
               className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] text-[12px] font-bold focus:outline-none cursor-pointer"
             >
-              <option value="Semua">Semua Wilayah Ketintang</option>
-              {LIST_DUSUN.map((d) => (
+              <option value="Semua">Semua Lokasi / Jalan</option>
+              {streetList.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>

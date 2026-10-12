@@ -13,7 +13,7 @@ import {
   ShieldCheck, ArrowRight, BarChart3, Users, Clock, Check
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
-import { getAllAduan } from '@/lib/aduan-service';
+import { getAllAduan, subscribeToAduanUpdates } from '@/lib/aduan-service';
 import { LIST_DUSUN, VILLAGE_CENTER_COORDINATES } from '@/lib/geo-config';
 import { seedDemoData } from '@/lib/seed-data';
 import { useToast } from '@/components/Toast';
@@ -44,6 +44,7 @@ const STATUS_BADGE: Record<string, { bg: string; text: string; border: string }>
   'Selesai':             { bg: 'bg-orange-50 text-orange-900', text: 'Selesai', border: 'border-orange-200' },
   'Sedang Ditindak':     { bg: 'bg-amber-100 text-amber-950', text: 'Sedang Ditindak', border: 'border-amber-300' },
   'Menunggu Verifikasi': { bg: 'bg-stone-100 text-stone-700', text: 'Menunggu Verifikasi', border: 'border-stone-200' },
+  'Ditolak (Spam / Tidak Valid)': { bg: 'bg-red-50 text-red-700', text: 'Ditolak / False', border: 'border-red-200' },
 };
 
 const PRIORITY_BADGE: Record<string, { bg: string; text: string; border: string }> = {
@@ -85,7 +86,14 @@ export default function HomePage() {
     setReports(data || []);
     setLoading(false);
   };
-  useEffect(() => { fetchReports(); }, []);
+
+  useEffect(() => {
+    fetchReports();
+    const unsubscribe = subscribeToAduanUpdates(() => {
+      getAllAduan().then((data) => setReports(data || []));
+    });
+    return () => unsubscribe();
+  }, []);
 
   /* Guardrail 4: Optimistic UI Upvote (0ms instant response) */
   const handleUpvote = (id: string, e: React.MouseEvent) => {
@@ -167,6 +175,10 @@ export default function HomePage() {
       res[c.key] = reports.filter(r => r.kategori === c.key).length;
     });
     return res;
+  }, [reports]);
+
+  const streetList = useMemo(() => {
+    return Array.from(new Set(reports.map(r => r.dusun).filter(Boolean)));
   }, [reports]);
 
   // Overall Stats
@@ -329,9 +341,9 @@ export default function HomePage() {
                 <MapViewer reports={reports} heightClass="h-full" theme="dark" />
               </div>
 
-              {/* Dusun Quick Badges */}
+              {/* Lokasi / Jalan Badges */}
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {LIST_DUSUN.slice(0, 6).map((d) => {
+                {streetList.slice(0, 6).map((d) => {
                   const cnt = reports.filter(r => r.dusun === d).length;
                   return (
                     <span key={d} className="px-2.5 py-1 rounded-full bg-[#191A1E] border border-[#2E3238] text-[11px] text-slate-300">
@@ -536,11 +548,11 @@ export default function HomePage() {
             <select
               value={selectedDusun}
               onChange={e => setDusun(e.target.value)}
-              aria-label="Filter Wilayah Ketintang"
-              className="px-3.5 py-1.5 rounded-full border border-[#E6E2D8] bg-white text-[12px] font-semibold text-[#191A1E] focus:outline-none cursor-pointer"
+              aria-label="Filter Lokasi Jalan"
+              className="px-3.5 py-1.5 rounded-full border border-[#E6E2D8] bg-white text-[12px] font-semibold text-[#191A1E] focus:outline-none cursor-pointer max-w-[200px] truncate"
             >
-              <option value="Semua">Semua Wilayah Ketintang</option>
-              {LIST_DUSUN.map(d => <option key={d} value={d}>{d}</option>)}
+              <option value="Semua">Semua Lokasi / Jalan</option>
+              {streetList.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
 
             <select
@@ -553,6 +565,7 @@ export default function HomePage() {
               <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
               <option value="Sedang Ditindak">Sedang Ditindak</option>
               <option value="Selesai">Selesai</option>
+              <option value="Ditolak (Spam / Tidak Valid)">Ditolak (Spam / False)</option>
             </select>
           </div>
         </div>

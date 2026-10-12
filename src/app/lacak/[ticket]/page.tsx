@@ -173,13 +173,28 @@ export default function TicketTrackingPage() {
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
                     : report.status === 'Sedang Ditindak'
                     ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                    : report.status === 'Ditolak (Spam / Tidak Valid)'
+                    ? 'bg-red-50 text-red-800 border border-red-300'
                     : 'bg-stone-100 text-stone-700 border border-stone-300'
                 }`}
               >
-                {report.status}
+                {report.status === 'Ditolak (Spam / Tidak Valid)' ? 'Ditolak (False / Tidak Valid)' : report.status}
               </span>
             </div>
           </div>
+
+          {/* ── Rejected Notice with Mandatory Reason ──── */}
+          {report.status === 'Ditolak (Spam / Tidak Valid)' && (
+            <div className="bg-red-50/80 border border-red-200 rounded-3xl p-6 space-y-2 shadow-card-soft">
+              <div className="flex items-center gap-2 text-red-800 font-bold text-sm">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>Laporan Tidak Dapat Diproses (Status: Ditolak / False)</span>
+              </div>
+              <p className="text-xs text-red-700 leading-relaxed">
+                <strong>Alasan dari Posko Wilayah:</strong> {report.catatan_admin || 'Laporan terindikasi spam, duplikat, atau informasi lokasi tidak sesuai.'}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* ── Before-After Slider if finished ──────────── */}

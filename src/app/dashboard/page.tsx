@@ -36,10 +36,11 @@ import {
   AlertOctagon,
   Printer,
   ChevronDown,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
-import { getAllAduan, updateAduan } from '@/lib/aduan-service';
+import { getAllAduan, updateAduan, deleteAduan, subscribeToAduanUpdates } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import { useToast } from '@/components/Toast';
 import nextDynamic from 'next/dynamic';
@@ -77,6 +78,12 @@ export default function DashboardPage() {
   const [quickDetailReport, setQuickDetailReport] = useState<Aduan | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  // Dynamic street / location list derived from real reports
+  const streetList = useMemo(() => {
+    const streets = Array.from(new Set(reports.map((r) => r.dusun).filter(Boolean)));
+    return streets.length > 0 ? streets : LIST_DUSUN;
+  }, [reports]);
+
   const fetchReports = async () => {
     setRefreshing(true);
     try {
@@ -92,6 +99,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchReports();
+    const unsubscribe = subscribeToAduanUpdates(() => {
+      fetchReports();
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
@@ -101,28 +112,71 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
-  // Quick Status Update in 1-Click
-  const handleQuickStatusChange = async (reportId: string, newStatus: 'Menunggu Verifikasi' | 'Sedang Ditindak' | 'Selesai') => {
+  // Quick Status Update in 1-Click (syncs local & remote, broadcasts live)
+  const handleQuickStatusChange = async (reportId: string, newStatus: string) => {
+    let reason: string | null = null;
+    if (newStatus === 'Ditolak (Spam / Tidak Valid)') {
+      const input = window.prompt(
+        'Masukkan alasan penolakan / status false (Wajib diisi):',
+        'Laporan spam / fiktif'
+      );
+      if (!input || !input.trim()) {
+        showToast('Alasan penolakan wajib diisi untuk status Ditolak / False!', 'error');
+        return;
+      }
+      reason = input.trim();
+    }
+
     setUpdatingId(reportId);
     try {
-      const { error } = await supabase
-        .from('aduan')
-        .update({ status: newStatus })
-        .eq('id', reportId);
-
-      if (error) throw error;
-
+      await updateAduan(reportId, {
+        status: newStatus,
+        ...(reason ? { catatan_admin: reason } : {})
+      });
       setReports((prev) =>
-        prev.map((r) => (r.id === reportId ? { ...r, status: newStatus } : r))
+        prev.map((r) =>
+          r.id === reportId
+            ? { ...r, status: newStatus, ...(reason ? { catatan_admin: reason } : {}) }
+            : r
+        )
       );
       showToast(`Status tiket berhasil diubah menjadi: ${newStatus}`, 'success');
       if (quickDetailReport && quickDetailReport.id === reportId) {
-        setQuickDetailReport({ ...quickDetailReport, status: newStatus });
+        setQuickDetailReport({
+          ...quickDetailReport,
+          status: newStatus,
+          ...(reason ? { catatan_admin: reason } : {})
+        });
       }
     } catch (e: any) {
       showToast('Gagal mengubah status: ' + e.message, 'error');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; ticketCode: string } | null>(null);
+
+  const handleDeleteReport = (reportId: string, ticketCode: string) => {
+    setDeleteTarget({ id: reportId, ticketCode });
+  };
+
+  const confirmDeleteAction = async () => {
+    if (!deleteTarget) return;
+    const { id, ticketCode } = deleteTarget;
+    setUpdatingId(id);
+    try {
+      await deleteAduan(id || ticketCode);
+      setReports((prev) => prev.filter((r) => r.id !== id && r.ticket_code !== ticketCode));
+      showToast(`Laporan #${ticketCode} berhasil dihapus permanen.`, 'success');
+      if (quickDetailReport && quickDetailReport.id === id) {
+        setQuickDetailReport(null);
+      }
+    } catch (e: any) {
+      showToast('Gagal menghapus laporan: ' + e.message, 'error');
+    } finally {
+      setUpdatingId(null);
+      setDeleteTarget(null);
     }
   };
 
@@ -171,9 +225,9 @@ export default function DashboardPage() {
   const selesai = reports.filter((r) => r.status === 'Selesai').length;
   const tingkatPenyelesaian = totalAduan > 0 ? Math.round((selesai / totalAduan) * 100) : 0;
 
-  // Breakdown per Dusun
+  // Breakdown per Lokasi / Jalan
   const dusunStats = useMemo(() => {
-    return LIST_DUSUN.map((d) => {
+    return streetList.map((d) => {
       const list = reports.filter((r) => r.dusun === d);
       const urgentCount = list.filter((r) => r.prioritas === 'Tinggi' && r.status !== 'Selesai').length;
       const doneCount = list.filter((r) => r.status === 'Selesai').length;
@@ -184,7 +238,7 @@ export default function DashboardPage() {
         done: doneCount,
       };
     }).sort((a, b) => b.total - a.total);
-  }, [reports]);
+  }, [reports, streetList]);
 
   // Breakdown per Kategori (8 AI Categories)
   const kategoriStats = useMemo(() => {
@@ -242,7 +296,7 @@ export default function DashboardPage() {
 
       autoTable(doc, {
         startY: 53,
-        head: [['No', 'Kode Tiket', 'Wilayah RW', 'Kategori', 'Prioritas', 'Status', 'Deskripsi Kerusakan', 'Tanggal']],
+        head: [['No', 'Kode Tiket', 'Lokasi / Jalan', 'Kategori', 'Prioritas', 'Status', 'Deskripsi Kerusakan', 'Tanggal']],
         body: tableData,
         headStyles: {
           fillColor: [25, 26, 30],
@@ -447,7 +501,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="font-display text-3xl font-bold text-[#191A1E]">{totalAduan}</div>
-            <div className="text-[11px] text-[#646973]">Tercatat di 15 dusun</div>
+            <div className="text-[11px] text-[#646973]">Tercatat di {streetList.length} titik jalan / lokasi</div>
           </div>
 
           <div className="bg-white p-6 rounded-3xl border border-red-200 bg-red-50/30 shadow-card-soft space-y-2">
@@ -495,8 +549,8 @@ export default function DashboardPage() {
                   onChange={(e) => setFilterDusun(e.target.value)}
                   className="bg-[#FAF8F3] border border-[#E6E2D8] rounded-full px-4 py-2 text-[#191A1E] font-bold focus:outline-none cursor-pointer"
                 >
-                  <option value="Semua">Semua Dusun</option>
-                  {LIST_DUSUN.map((d) => (
+                  <option value="Semua">Semua Lokasi / Jalan</option>
+                  {streetList.map((d) => (
                     <option key={d} value={d}>
                       {d}
                     </option>
@@ -539,6 +593,7 @@ export default function DashboardPage() {
                   <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
                   <option value="Sedang Ditindak">Sedang Ditindak</option>
                   <option value="Selesai">Selesai</option>
+                  <option value="Ditolak (Spam / Tidak Valid)">Ditolak (Spam / False)</option>
                 </select>
               </div>
 
@@ -578,7 +633,7 @@ export default function DashboardPage() {
                         <tr>
                           <th className="py-3.5 px-4">Tiket</th>
                           <th className="py-3.5 px-4">Prioritas &amp; Sektor</th>
-                          <th className="py-3.5 px-4">Dusun &amp; Pelapor</th>
+                          <th className="py-3.5 px-4">Lokasi &amp; Pelapor</th>
                           <th className="py-3.5 px-4">Ubah Status Cepat</th>
                           <th className="py-3.5 px-4 text-right">Aksi</th>
                         </tr>
@@ -637,12 +692,15 @@ export default function DashboardPage() {
                                     ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                                     : report.status === 'Sedang Ditindak'
                                     ? 'bg-amber-50 text-amber-800 border-amber-300'
+                                    : report.status === 'Ditolak (Spam / Tidak Valid)'
+                                    ? 'bg-red-50 text-red-800 border-red-300'
                                     : 'bg-stone-100 text-stone-700 border-stone-300'
                                 }`}
                               >
                                 <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
                                 <option value="Sedang Ditindak">Sedang Ditindak</option>
                                 <option value="Selesai">Selesai</option>
+                                <option value="Ditolak (Spam / Tidak Valid)">Ditolak (Spam / False)</option>
                               </select>
                             </td>
 
@@ -654,6 +712,14 @@ export default function DashboardPage() {
                                   title="Pratinjau Cepat"
                                 >
                                   <Eye className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  onClick={() => handleDeleteReport(report.id, report.ticket_code)}
+                                  className="p-2 rounded-full border border-red-200 hover:bg-red-50 text-red-600 cursor-pointer transition-colors"
+                                  title="Hapus Laporan Ini (Permanen)"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </button>
 
                                 <Link
@@ -697,9 +763,9 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between border-b border-[#E6E2D8] pb-3">
                   <h3 className="font-display font-bold text-sm text-[#191A1E] flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-amber-600" />
-                    Distribusi Beban Kerusakan per Wilayah Dusun
+                    Distribusi Beban Kerusakan per Lokasi / Jalan
                   </h3>
-                  <span className="text-xs text-[#646973] font-bold">{LIST_DUSUN.length} Dusun</span>
+                  <span className="text-xs text-[#646973] font-bold">{streetList.length} Titik Jalan</span>
                 </div>
 
                 <div className="space-y-3.5">
@@ -821,7 +887,7 @@ export default function DashboardPage() {
                   <tr>
                     <th className="py-3 px-3">No</th>
                     <th className="py-3 px-3">Kode Tiket</th>
-                    <th className="py-3 px-3">Wilayah Dusun</th>
+                    <th className="py-3 px-3">Lokasi / Jalan</th>
                     <th className="py-3 px-3">Kategori Fasilitas</th>
                     <th className="py-3 px-3">Skor Urgensi (AI)</th>
                     <th className="py-3 px-3">Rekomendasi Penanganan</th>
@@ -925,19 +991,71 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E6E2D8] flex items-center justify-end gap-2 text-xs">
+            <div className="pt-3 border-t border-[#E6E2D8] flex items-center justify-between gap-2 text-xs">
               <button
-                onClick={() => setQuickDetailReport(null)}
-                className="px-4 py-2 text-[#646973] hover:text-[#191A1E] font-bold cursor-pointer"
+                onClick={() => handleDeleteReport(quickDetailReport.id, quickDetailReport.ticket_code)}
+                className="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-full font-bold transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                title="Hapus Laporan Ini"
               >
-                Tutup
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Hapus Laporan</span>
               </button>
-              <Link
-                href={`/dashboard/aduan/${quickDetailReport.id}`}
-                className="px-5 py-2.5 bg-[#191A1E] hover:bg-[#2D2F36] text-white rounded-full font-bold transition-colors cursor-pointer"
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setQuickDetailReport(null)}
+                  className="px-4 py-2 text-[#646973] hover:text-[#191A1E] font-bold cursor-pointer"
+                >
+                  Tutup
+                </button>
+                <Link
+                  href={`/dashboard/aduan/${quickDetailReport.id}`}
+                  className="px-5 py-2.5 bg-[#191A1E] hover:bg-[#2D2F36] text-white rounded-full font-bold transition-colors cursor-pointer"
+                >
+                  Kelola Tindakan Lengkap →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CUSTOM DELETE CONFIRMATION MODAL ──────────── */}
+      {deleteTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 space-y-4 border border-[#E6E2D8] shadow-2xl text-center animate-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto shadow-inner">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div className="space-y-1.5">
+              <h3 className="font-display font-bold text-base text-[#191A1E]">
+                Hapus Pengaduan #{deleteTarget.ticketCode}?
+              </h3>
+              <p className="text-xs text-[#646973] leading-relaxed">
+                Apakah Anda yakin ingin menghapus permanen laporan ini? Data akan dihapus dari antrean, peta, dan database posko.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={updatingId !== null}
+                className="flex-1 py-2.5 rounded-full border border-[#E6E2D8] text-xs font-bold text-[#646973] hover:bg-[#FAF8F3] hover:text-[#191A1E] transition-colors cursor-pointer"
               >
-                Kelola Tindakan Lengkap →
-              </Link>
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteAction}
+                disabled={updatingId !== null}
+                className="flex-1 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                {updatingId !== null ? 'Menghapus...' : 'Ya, Hapus'}
+              </button>
             </div>
           </div>
         </div>

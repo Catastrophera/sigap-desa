@@ -11,7 +11,6 @@ import {
 import { supabase, LIST_KATEGORI, KategoriAduan } from '@/lib/supabase';
 import { submitNewAduan } from '@/lib/aduan-service';
 import {
-  LIST_DUSUN,
   KETINTANG_CENTER_COORDINATES,
   extractGeotagFromPhoto,
   findClosestKetintangLandmark,
@@ -38,7 +37,6 @@ export default function LaporPage() {
 
   const [nama, setNama]                 = useState('');
   const [kontak, setKontak]             = useState('');
-  const [dusun, setDusun]               = useState(LIST_DUSUN[0]);
   const [deskripsi, setDeskripsi]       = useState('');
   const [kategori, setKategori]         = useState<KategoriAduan>('Jalan & Jembatan');
   const [prioritas, setPrioritas]       = useState<'Tinggi' | 'Sedang' | 'Rendah'>('Sedang');
@@ -50,7 +48,7 @@ export default function LaporPage() {
   const [isExtractingGeotag, setIsExtractingGeotag] = useState(false);
   const [geotagStatus, setGeotagStatus] = useState<string | null>(null);
   const [geotagSource, setGeotagSource] = useState<'gps' | 'exif' | 'manual' | 'default'>('default');
-  const [resolvedAddress, setResolvedAddress] = useState('Kelurahan Ketintang, Gayungan, Surabaya');
+  const [resolvedAddress, setResolvedAddress] = useState('Jl. Ketintang Baru');
   const [coords, setCoords]             = useState({
     latitude: KETINTANG_CENTER_COORDINATES.latitude,
     longitude: KETINTANG_CENTER_COORDINATES.longitude,
@@ -70,10 +68,6 @@ export default function LaporPage() {
         const addr = await reverseGeocodeKetintang(res.latitude, res.longitude);
         if (isMounted) {
           setResolvedAddress(addr);
-          const closest = findClosestKetintangLandmark(res.latitude, res.longitude);
-          if (closest && closest.wilayah) {
-            setDusun(closest.wilayah);
-          }
         }
       }
     });
@@ -161,11 +155,6 @@ export default function LaporPage() {
 
         const addr = await reverseGeocodeKetintang(gps.latitude, gps.longitude);
         setResolvedAddress(addr);
-
-        const closest = findClosestKetintangLandmark(gps.latitude, gps.longitude);
-        if (closest && closest.wilayah) {
-          setDusun(closest.wilayah);
-        }
       } else {
         setGeotagStatus('Foto tidak menyertakan koordinat GPS (umum bila dikirim via WhatsApp). Lokasi peta tetap aktif.');
       }
@@ -207,7 +196,7 @@ export default function LaporPage() {
         kontak_pelapor: kontak.trim() || null,
         deskripsi: deskripsi.trim(),
         foto_url: fotoUrl || preview,
-        dusun,
+        dusun: resolvedAddress.trim() || 'Jl. Ketintang',
         latitude: coords.latitude,
         longitude: coords.longitude,
         kategori,
@@ -283,7 +272,7 @@ export default function LaporPage() {
             <div className="space-y-2">
               <h2 className="font-display font-bold text-2xl text-[#191A1E]">Laporan Berhasil Terkirim!</h2>
               <p className="text-[13px] text-[#646973] leading-relaxed">
-                Pengaduan fasilitas di wilayah {dusun} telah tercatat pada Command Center SIGAP - Ketintang dan siap diverifikasi.
+                Pengaduan fasilitas di lokasi {resolvedAddress} telah tercatat pada Command Center SIGAP - Ketintang dan siap diverifikasi.
               </p>
               
               <div className="pt-3">
@@ -449,25 +438,32 @@ export default function LaporPage() {
               </div>
             </div>
 
-            {/* Step 3 – Wilayah Ketintang & Map */}
-            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7">
+            {/* Step 3 – Titik Lokasi & Nama Jalan */}
+            <div className="bg-white rounded-3xl border border-[#E6E2D8] shadow-card-soft p-6 sm:p-7 space-y-4">
               <StepHeader
                 n={3}
-                title="Wilayah &amp; Titik Lokasi Ketintang *"
-                subtitle="Pilih lingkungan RW Ketintang atau gunakan auto deteksi lokasi pada peta."
+                title="Titik Lokasi &amp; Nama Jalan *"
+                subtitle="Geser titik di peta atau gunakan GPS. Nama jalan akan terdeteksi otomatis dari titik lokasi."
               />
               <div className="space-y-4">
                 <div>
                   <label className="block text-[13px] font-bold text-[#191A1E] mb-1.5">
-                    Lingkungan RW / Kawasan Ketintang:
+                    Nama Jalan / Patokan Lokasi:
                   </label>
-                  <select
-                    value={dusun}
-                    onChange={e => setDusun(e.target.value)}
-                    className="w-full rounded-xl border border-[#E6E2D8] px-4 py-3 text-[14px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E] cursor-pointer font-medium"
-                  >
-                    {LIST_DUSUN.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-orange-600 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      required
+                      value={resolvedAddress}
+                      onChange={e => setResolvedAddress(e.target.value)}
+                      placeholder="Contoh: Jl. Ketintang Baru VII, depan toko kelontong..."
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E6E2D8] text-[13px] text-[#191A1E] bg-[#FAF8F3] focus:bg-white focus:outline-none focus:border-[#191A1E] font-medium"
+                    />
+                  </div>
+                  <p className="text-[11px] text-[#646973] mt-1.5">
+                    *Terdeteksi otomatis saat Anda klik peta atau deteksi GPS di bawah. Anda juga dapat melengkapi nomor rumah atau patokan.
+                  </p>
                 </div>
 
                 <div>
@@ -478,7 +474,6 @@ export default function LaporPage() {
                     setGeotagSource={setGeotagSource}
                     address={resolvedAddress}
                     setAddress={setResolvedAddress}
-                    onWilayahSuggest={(wil) => setDusun(wil)}
                   />
                 </div>
               </div>

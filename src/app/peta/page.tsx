@@ -19,6 +19,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAllAduan } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import nextDynamic from 'next/dynamic';
 
@@ -43,16 +44,8 @@ export default function PetaPage() {
     async function fetchMapReports() {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('aduan')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Error fetching map points:', error);
-        } else {
-          setReports(data || []);
-        }
+        const data = await getAllAduan();
+        setReports(data || []);
       } catch (err) {
         console.error(err);
       } finally {

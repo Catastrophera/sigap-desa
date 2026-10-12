@@ -9,6 +9,7 @@ import {
   Check, Navigation, Crosshair
 } from 'lucide-react';
 import { supabase, LIST_KATEGORI, KategoriAduan } from '@/lib/supabase';
+import { submitNewAduan } from '@/lib/aduan-service';
 import {
   LIST_DUSUN,
   KETINTANG_CENTER_COORDINATES,
@@ -200,21 +201,20 @@ export default function LaporPage() {
       }
 
       const code = `SIGAP-${Math.floor(1000 + Math.random() * 9000)}`;
-      const { error } = await supabase.from('aduan').insert([{
+      await submitNewAduan({
         ticket_code: code,
         nama_pelapor: nama.trim() || 'Warga Ketintang',
         kontak_pelapor: kontak.trim() || null,
         deskripsi: deskripsi.trim(),
-        foto_url: fotoUrl,
+        foto_url: fotoUrl || preview,
         dusun,
         latitude: coords.latitude,
         longitude: coords.longitude,
         kategori,
         prioritas,
         status: 'Menunggu Verifikasi',
-      }]);
+      });
 
-      if (error) throw error;
       setTicket(code);
       showToast('Laporan berhasil dikirim ke posko penanganan Ketintang!', 'success');
     } catch (err: any) {

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, CheckCircle2, Clock, ChevronRight, Share2, Filter, Sliders, MapPin, Sparkles } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAllAduan } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import { useToast } from '@/components/Toast';
@@ -16,12 +17,10 @@ export default function HistoriPage() {
   const [filterKat, setFilterKat]     = useState('Semua');
 
   useEffect(() => {
-    supabase.from('aduan').select('*').eq('status', 'Selesai')
-      .order('created_at', { ascending: false })
-      .then(({ data, error }) => {
-        if (!error) setReports(data || []);
-        setLoading(false);
-      });
+    getAllAduan().then((all) => {
+      setReports((all || []).filter((r) => r.status === 'Selesai'));
+      setLoading(false);
+    });
   }, []);
 
   const filtered = useMemo(() => reports.filter(r =>

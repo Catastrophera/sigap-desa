@@ -13,6 +13,7 @@ import {
   ShieldCheck, ArrowRight, BarChart3, Users, Clock, Check
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAllAduan } from '@/lib/aduan-service';
 import { LIST_DUSUN, VILLAGE_CENTER_COORDINATES } from '@/lib/geo-config';
 import { seedDemoData } from '@/lib/seed-data';
 import { useToast } from '@/components/Toast';
@@ -80,8 +81,8 @@ export default function HomePage() {
   /* Fetch reports */
   const fetchReports = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('aduan').select('*').order('created_at', { ascending: false });
-    if (!error) setReports(data || []);
+    const data = await getAllAduan();
+    setReports(data || []);
     setLoading(false);
   };
   useEffect(() => { fetchReports(); }, []);

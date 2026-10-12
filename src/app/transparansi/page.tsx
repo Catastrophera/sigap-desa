@@ -18,6 +18,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAllAduan } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import nextDynamic from 'next/dynamic';
 
@@ -44,17 +45,8 @@ export default function TransparencyMapPage() {
     async function fetchPublicReports() {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('aduan')
-          .select('*')
-          .in('status', ['Sedang Ditindak', 'Selesai'])
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Error loading transparency data:', error);
-        } else {
-          setReports(data || []);
-        }
+        const all = await getAllAduan();
+        setReports(all.filter((r) => ['Sedang Ditindak', 'Selesai'].includes(r.status)));
       } catch (err) {
         console.error(err);
       } finally {

@@ -85,6 +85,9 @@ const LeafletMap = dynamic(
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxNativeZoom={18}
+            keepBuffer={4}
+            updateWhenZooming={false}
           />
 
           {/* Ketintang Focus Perimeter */}

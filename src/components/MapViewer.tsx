@@ -145,6 +145,9 @@ const LeafletViewer = dynamic(
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url={tileUrl}
             className={theme === 'dark' ? 'leaflet-tile-dark' : ''}
+            maxNativeZoom={18}
+            keepBuffer={4}
+            updateWhenZooming={false}
           />
 
           <MapController reports={reports} selectedReportId={selectedReportId} />

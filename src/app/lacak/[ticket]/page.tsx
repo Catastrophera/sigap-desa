@@ -24,6 +24,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAduanByTicket } from '@/lib/aduan-service';
 import { useToast } from '@/components/Toast';
 import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 
@@ -45,13 +46,8 @@ export default function TicketTrackingPage() {
       setNotFound(false);
 
       try {
-        const { data, error } = await supabase
-          .from('aduan')
-          .select('*')
-          .eq('ticket_code', ticketCode)
-          .single();
-
-        if (error || !data) {
+        const data = await getAduanByTicket(ticketCode);
+        if (!data) {
           setNotFound(true);
         } else {
           setReport(data);

@@ -39,6 +39,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAllAduan, updateAduan } from '@/lib/aduan-service';
 import { LIST_DUSUN } from '@/lib/geo-config';
 import { useToast } from '@/components/Toast';
 import nextDynamic from 'next/dynamic';
@@ -79,16 +80,8 @@ export default function DashboardPage() {
   const fetchReports = async () => {
     setRefreshing(true);
     try {
-      const { data, error } = await supabase
-        .from('aduan')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching reports:', error);
-      } else {
-        setReports(data || []);
-      }
+      const data = await getAllAduan();
+      setReports(data || []);
     } catch (err) {
       console.error(err);
     } finally {

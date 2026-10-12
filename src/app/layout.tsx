@@ -32,6 +32,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={`scroll-smooth ${plusJakartaSans.variable} ${outfit.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://tile.openstreetmap.org" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
       <body className="min-h-screen flex flex-col bg-[#FAF8F3] text-[#191A1E] font-sans antialiased selection:bg-orange-100 selection:text-orange-950 relative">
         <CivicBackground />
         <ToastProvider>

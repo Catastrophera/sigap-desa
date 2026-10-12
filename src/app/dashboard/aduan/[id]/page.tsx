@@ -24,6 +24,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { supabase, Aduan } from '@/lib/supabase';
+import { getAduanById, updateAduan } from '@/lib/aduan-service';
 import { convertToWebP } from '@/lib/image-compress';
 import { useToast } from '@/components/Toast';
 
@@ -50,15 +51,8 @@ export default function AdminAduanDetailPage() {
       setLoading(true);
 
       try {
-        const { data, error } = await supabase
-          .from('aduan')
-          .select('*')
-          .eq('id', reportId)
-          .single();
-
-        if (error) {
-          console.error('Error fetching aduan:', error);
-        } else if (data) {
+        const data = await getAduanById(reportId);
+        if (data) {
           setReport(data);
           setStatus(data.status);
           setPrioritas(data.prioritas);
@@ -114,17 +108,12 @@ export default function AdminAduanDetailPage() {
         }
       }
 
-      const { error: updateError } = await supabase
-        .from('aduan')
-        .update({
-          status,
-          prioritas,
-          catatan_admin: catatanAdmin.trim() || null,
-          foto_selesai_url: finalFotoSelesaiUrl,
-        })
-        .eq('id', report.id);
-
-      if (updateError) throw updateError;
+      await updateAduan(report.id, {
+        status,
+        prioritas,
+        catatan_admin: catatanAdmin.trim() || null,
+        foto_selesai_url: finalFotoSelesaiUrl,
+      });
 
       showToast('Status dan tindakan berhasil diperbarui.', 'success');
       router.refresh();

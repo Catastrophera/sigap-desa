@@ -56,10 +56,24 @@
 html {
   scroll-behavior: smooth;
   background-color: #FAF8F3;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 #main-content {
   background-color: transparent !important;
+}
+
+/* ── Mobile & GPU Hardware Acceleration ───────────────── */
+.leaflet-tile {
+  will-change: transform;
+}
+
+.radar-pulse-core,
+.radar-pulse-wave,
+.tilt-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 body {
